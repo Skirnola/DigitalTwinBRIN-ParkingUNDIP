@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>BRIN Previous Analysis</title>
+  <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/blob/575171d0e9964327d99950733c2b48cea0c59d72/logo-brin.png?raw=true">
+
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      color: darkslategrey; 
+      overflow-x: hidden; 
+    }
+    body::before { 
+      content: ""; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: none; 
+      opacity: 0.2; 
+      z-index: -1; 
+    }
+    video#bg-video { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      z-index: -2; 
+      opacity: 0.4; 
+    }
+    header { 
+      background-image: linear-gradient(to right, lightseagreen, palevioletred); 
+      color: white; 
+      padding: 10px 20px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      position: fixed; 
+      width: 100%; 
+      top: 0; 
+      z-index: 1000; 
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    }
+    .logo { 
+      display: flex; 
+      align-items: center; 
+      cursor: pointer; 
+    }
+    .logo img { 
+      height: 40px; 
+      vertical-align: middle; 
+    }
+    .logo span { 
+      margin-left: 10px; 
+      font-size: 16px; 
+      font-weight: bold; 
+    }
+    .header-right { 
+      display: flex; 
+      align-items: center; 
+    }
+    .header-right span { 
+      margin-right: 20px; 
+      font-size: 14px; 
+    }
+    .main-content { 
+      margin-left: 0; 
+      padding: 80px 20px 20px; 
+      min-height: 100vh; 
+      transition: margin-left 0.3s ease-in-out;
+    }
+    .main-content.with-toolbar {
+      margin-left: 220px;
+    }
+    .toolbar { 
+      position: fixed; 
+      top: 60px; 
+      left: -400px; 
+      width: 200px; 
+      height: 100%; 
+      background-image: linear-gradient(to bottom, lightseagreen, palevioletred); 
+      padding: 15px; 
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); 
+      transition: left 0.3s ease-in-out; 
+      z-index: 999; 
+      overflow-y: auto; 
+    }
+    .toolbar.active { 
+      left: 0; 
+    }
+    .toolbar .feature-box { 
+      background-color: lightgrey; 
+      border-radius: 8px; 
+      padding: 12px; 
+      margin-bottom: 16px; 
+      font-size: 13px; 
+    }
+    .toolbar .feature-box h3 { 
+      margin: 0 0 8px; 
+      font-size: 14px; 
+      color: black; 
+    }
+    .toolbar .feature-box button { 
+      width: 100%; 
+      padding: 6px; 
+      background-color: darkgrey; 
+      color: black; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+      font-size: 11px; 
+      margin-bottom: 4px; 
+      transition: background-color 0.3s; 
+    }
+    .toolbar .feature-box button:hover { 
+      background-color: darkslategrey; 
+      color: white; 
+    }
+    .toolbar .user-info { 
+      text-align: center; 
+    }
+    .toolbar .user-info img { 
+      width: 40px; 
+      height: 40px; 
+      border-radius: 50%; 
+      margin-bottom: 8px; 
+    }
+    .toolbar .user-info span { 
+      display: block; 
+      margin: 4px 0; 
+      font-size: 11px; 
+      color: black; 
+    }
+    .overview { 
+      background-image: linear-gradient(to bottom left, palevioletred, lightseagreen); 
+      padding: 20px; 
+      border-radius: 8px; 
+      border: 2px solid #dc3545; 
+      margin-bottom: 20px; 
+      color: white; /* Set text color to white for overview section */
+    }
+    .overview h1 { 
+      margin: 0 0 15px; 
+      color: white; /* Ensure h1 is white */
+      font-size: 20px; 
+      font-weight: bold; 
+    }
+    .history, .customers { 
+      background-color: rgba(0, 105, 148, 0.4); /* Biru laut dengan opacity 40% */
+      padding: 15px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+      margin-bottom: 20px; 
+      color: darkgray; /* Ubah teks menjadi abu-abu */
+    }
+    .history h2, .customers h2 { 
+      margin: 0 0 10px; 
+      color: white; /* Tetap warna putih untuk header */
+      font-size: 16px; 
+      font-weight: bold; 
+    }
+    .sort-controls {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: white; /* White text for sort controls in overview */
+    }
+    .sort-controls label {
+      font-size: 12px;
+      font-weight: bold;
+      color: white; /* White text for labels */
+    }
+    .sort-controls select {
+      padding: 5px 8px;
+      font-size: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+      color: darkslategrey; /* Dark text for select dropdown readability */
+    }
+    .sort-controls button {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background-color 0.3s;
+    }
+    .sort-controls button:hover {
+      background-color: #0056b3;
+    }
+    .history-list { 
+      max-height: 200px; 
+      overflow-y: auto; 
+      border: 1px solid #ddd; 
+      padding: 10px; 
+      border-radius: 5px; 
+      background: #f9f9f9; 
+      color: darkgray; /* Ubah teks menjadi abu-abu */
+    }
+    .history-item, .customer-item { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 10px; 
+      font-size: 12px; 
+      border-bottom: 1px solid #eee; 
+      transition: background 0.2s; 
+      color: darkgray; /* Ubah teks menjadi abu-abu */
+    }
+    .history-item:last-child, .customer-item:last-child { 
+      border-bottom: none; 
+    }
+    .history-item:hover, .customer-item:hover { 
+      background: #f0f0f0; 
+    }
+    .status.in { 
+      color: red; 
+      font-weight: bold; 
+      background: #ffe6e6; 
+      padding: 5px 10px; 
+      border-radius: 5px; 
+    }
+    .status.out { 
+      color: green; 
+      font-weight: bold; 
+      background: #e6ffe6; 
+      padding: 5px 10px; 
+      border-radius: 5px; 
+    }
+    .customer-item { 
+      flex-direction: column; 
+      align-items: flex-start; 
+      gap: 5px; 
+      font-size: 13px; 
+      position: relative;
+      border: 1px solid #e0e0e0;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      padding: 15px;
+      background: white;
+      color: darkgray; /* Ubah teks menjadi abu-abu */
+    }
+    .customer-item strong { 
+      color: darkgray; /* Ubah teks menjadi abu-abu */
+      font-size: 14px; 
+      margin-bottom: 5px; 
+    }
+    .customer-item span { 
+      display: block; 
+      color: darkgray; /* Ubah teks menjadi abu-abu */
+      margin-bottom: 3px;
+    }
+    .customer-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .customer-item button.edit-btn {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background-color 0.3s;
+    }
+    .customer-item button.edit-btn:hover {
+      background-color: #0056b3;
+    }
+    .customer-item button.delete-btn {
+      padding: 5px 10px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background-color 0.3s;
+    }
+    .customer-item button.delete-btn:hover {
+      background-color: #c82333;
+    }
+    .edit-form {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+      padding: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 10px;
+      color: darkslategrey; /* Dark text for edit form */
+    }
+    .edit-form input {
+      padding: 5px;
+      font-size: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+      box-sizing: border-box;
+      color: darkslategrey; /* Dark text for inputs */
+    }
+    .edit-form button {
+      padding: 5px 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+    .edit-form button:hover {
+      background-color: #218838;
+    }
+    .edit-form button.cancel-btn {
+      background-color: #dc3545;
+    }
+    .edit-form button.cancel-btn:hover {
+      background-color: #c82333;
+    }
+    .delete-confirmation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .delete-confirmation-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color: darkslategrey; /* Dark text for confirmation box */
+    }
+    .delete-confirmation-box h3 {
+      color: #dc3545;
+      margin-bottom: 15px;
+    }
+    .delete-confirmation-box p {
+      margin-bottom: 20px;
+      color: darkslategrey;
+    }
+    .delete-confirmation-box button {
+      padding: 8px 16px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .delete-confirmation-box .confirm-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+    .delete-confirmation-box .cancel-delete {
+      background-color: #6c757d;
+      color: white;
+    }
+    #error-message {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: rgba(255, 0, 0, 0.9);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 12px;
+      z-index: 1001;
+      display: none;
+      max-width: 300px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #success-message {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: rgba(40, 167, 69, 0.9);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 12px;
+      z-index: 1001;
+      display: none;
+      max-width: 300px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
+      authDomain: "digitaltwinparkingbrin.firebaseapp.com",
+      databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "digitaltwinparkingbrin",
+      storageBucket: "digitaltwinparkingbrin.firebasestorage.app",
+      messagingSenderId: "608462498913",
+      appId: "1:608462498913:web:73695d8c91f923e2db8e20",
+      measurementId: "G-F1TRY65RTG"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+  <video id="bg-video" autoplay muted loop>
+    <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
+  </video>
+
+  <header>
+    <div class="logo" id="toggleToolbar">
+      <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+      <span>BRIN</span><span>Badan Riset Nasional</span>
+    </div>
+    <div class="header-right"><span>Parking Management System</span></div>
+  </header>
+
+  <aside class="toolbar" id="toolbar">
+    <div class="feature-box user-info" id="userInfo">
+      <h3>User</h3>
+      <img id="profilePic" src="/assets/user.JPG" alt="User">
+      <span>Welcome Back</span>
+      <span id="userName"></span>
+      <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
+      <button class="logout">Log Out</button>
+    </div>
+    <div class="feature-box">
+      <h3>Parking Management System</h3>
+            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
+            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
+            <button class="export-data" onclick="window.location.href='/exportdata.html'">Export Data</button>
+            <button class="helpdesk" onclick="window.location.href='/helpdesk.html'">Helpdesk</button>
+            <button class="parking-analysis" onclick="window.location.href='/parkiranalysis.html'">Parking Analysis</button>
+          </div>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    <div class="overview">
+      <h1>Previous Analysis</h1>
+      <div class="history">
+        <h2>Status Slot Parkir Realtime</h2>
+        <div id="slotStatusList" class="history-list"></div>
+      </div>
+      <div class="customers">
+        <h2>Customers Message</h2>
+        <div class="sort-controls">
+          <label for="sortBy">Sort by:</label>
+          <select id="sortBy">
+            <option value="slot">Slot Number</option>
+            <option value="date">Date</option>
+            <option value="user">User</option>
+            <option value="plate">Plate</option>
+          </select>
+          <label for="sortOrder">Order:</label>
+          <select id="sortOrder">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+          <button onclick="applySorting()">Apply Sort</button>
+          <button onclick="resetSorting()">Reset</button>
+        </div>
+        <div id="customersMessageList" class="history-list"></div>
+        <div id="error-message"></div>
+        <div id="success-message"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteConfirmation" class="delete-confirmation">
+    <div class="delete-confirmation-box">
+      <h3>Confirm Deletion</h3>
+      <p id="deleteMessage">Are you sure you want to delete this customer message?</p>
+      <button id="confirmDelete" class="confirm-delete">Delete</button>
+      <button id="cancelDelete" class="cancel-delete">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    let messagesData = [];
+    let currentSortBy = 'slot';
+    let currentSortOrder = 'asc';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('Silakan login terlebih dahulu!');
+        window.location.replace('/login.html');
+        return;
+      }
+      document.getElementById('userName').textContent = currentUser.username;
+      document.getElementById('profilePic').src = currentUser.profilePic || '/assets/user.JPG';
+
+      document.querySelector('.logout').addEventListener('click', () => {
+        localStorage.removeItem('currentUser');
+        alert('Berhasil logout!');
+        window.location.replace('/login.html');
+      });
+
+      document.getElementById('toggleToolbar').addEventListener('click', () => {
+        document.getElementById('toolbar').classList.toggle('active');
+        document.getElementById('mainContent').classList.toggle('with-toolbar');
+      });
+
+      // Initialize sort controls
+      document.getElementById('sortBy').value = currentSortBy;
+      document.getElementById('sortOrder').value = currentSortOrder;
+
+      function showError(message) {
+        const errorElement = document.getElementById('error-message');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
+        console.error('Error:', message);
+      }
+
+      function showSuccess(message) {
+        const successElement = document.getElementById('success-message');
+        successElement.textContent = message;
+        successElement.style.display = 'block';
+        setTimeout(() => { successElement.style.display = 'none'; }, 5000);
+        console.log('Success:', message);
+      }
+
+      // Function to parse mixed date formats (YYYY-MM-DD or DD-MM-YYYY)
+      function parseDate(dateStr) {
+        if (!dateStr) return new Date(0); // Fallback for missing dates
+        // Try YYYY-MM-DD
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+          const date = new Date(dateStr);
+          if (!isNaN(date)) return date;
+        }
+        // Try DD-MM-YYYY
+        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+          const [day, month, year] = dateStr.split('-').map(Number);
+          const date = new Date(year, month - 1, day);
+          if (!isNaN(date)) return date;
+        }
+        console.warn(`Invalid date format: ${dateStr}`);
+        return new Date(0); // Fallback for invalid dates
+      }
+
+      // Realtime Slot Status
+      const slotStatusList = document.getElementById("slotStatusList");
+      function updateSlotStatus(data) {
+        console.log('Slot Status Data:', data);
+        slotStatusList.innerHTML = '';
+        if (!data) {
+          showError('No slot status data available');
+          return;
+        }
+        const slots = Object.keys(data);
+        slots.sort((a, b) => {
+          const numA = parseInt(a.split('_')[1]) || 999;
+          const numB = parseInt(b.split('_')[1]) || 999;
+          return numA - numB;
+        });
+        slots.forEach((slot) => {
+          const status = data[slot] ? 'Terisi' : 'Kosong';
+          const statusClass = data[slot] ? 'status in' : 'status out';
+          slotStatusList.innerHTML += `
+            <div class="history-item">
+              <span>${slot.replace('_', ' ').toUpperCase()}</span>
+              <span class="${statusClass}">${status}</span>
+            </div>
+          `;
+        });
+      }
+
+      firebase.database().ref("slot_parking").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          updateSlotStatus(data);
+        } else {
+          showError('No slot status data available');
+        }
+      }, (error) => {
+        showError(`Failed to fetch slot status: ${error.message}`);
+      });
+
+      // Realtime Customers Message
+      const customersMessageList = document.getElementById("customersMessageList");
+
+      // Sorting functions
+      window.applySorting = function() {
+        currentSortBy = document.getElementById('sortBy').value;
+        currentSortOrder = document.getElementById('sortOrder').value;
+        updateCustomersMessage();
+      };
+
+      window.resetSorting = function() {
+        currentSortBy = 'slot';
+        currentSortOrder = 'asc';
+        document.getElementById('sortBy').value = currentSortBy;
+        document.getElementById('sortOrder').value = currentSortOrder;
+        updateCustomersMessage();
+      };
+
+      function sortMessages(messages) {
+        return messages.sort((a, b) => {
+          let valueA, valueB;
+          
+          switch (currentSortBy) {
+            case 'slot':
+              valueA = parseInt(a.slot.split('_')[1]) || 999;
+              valueB = parseInt(b.slot.split('_')[1]) || 999;
+              break;
+            case 'date':
+              valueA = parseDate(a.message.date);
+              valueB = parseDate(b.message.date);
+              break;
+            case 'user':
+              valueA = (a.message.user || '').toLowerCase();
+              valueB = (b.message.user || '').toLowerCase();
+              break;
+            case 'plate':
+              valueA = (a.message.plate || '').toLowerCase();
+              valueB = (b.message.plate || '').toLowerCase();
+              break;
+            default:
+              valueA = parseInt(a.slot.split('_')[1]) || 999;
+              valueB = parseInt(b.slot.split('_')[1]) || 999;
+          }
+          
+          if (currentSortOrder === 'desc') {
+            return valueA < valueB ? 1 : valueA > valueB ? -1 : 0;
+          } else {
+            return valueA > valueB ? 1 : valueA < valueB ? -1 : 0;
+          }
+        });
+      }
+
+      function showEditForm(slot, message) {
+        const formId = `edit-form-${slot}`;
+        const existingForm = document.getElementById(formId);
+        if (existingForm) {
+          existingForm.style.display = existingForm.style.display === 'none' ? 'flex' : 'none';
+          return existingForm;
+        }
+
+        const form = document.createElement('div');
+        form.className = 'edit-form';
+        form.id = formId;
+        const dateValue = message.date ? (message.date.includes('-') && !message.date.startsWith('20') ? message.date : message.date.split('T')[0]) : '';
+        form.innerHTML = `
+          <input type="text" id="edit-slot-${slot}" value="${slot}" placeholder="Slot (e.g., slot_10)">
+          <input type="text" id="edit-contactNumber-${slot}" value="${message.contactNumber || ''}" placeholder="Contact Number">
+          <input type="text" id="edit-idWorker-${slot}" value="${message.idWorker || ''}" placeholder="ID Worker">
+          <input type="text" id="edit-lastAction-${slot}" value="${message.lastAction || ''}" placeholder="Last Action">
+          <input type="text" id="edit-parkingNotes-${slot}" value="${message.parkingNotes || ''}" placeholder="Parking Notes">
+          <input type="text" id="edit-plate-${slot}" value="${message.plate || ''}" placeholder="Plate">
+          <input type="text" id="edit-timestamp-${slot}" value="${message.timestamp || ''}" placeholder="Timestamp (HH:MM:SS)">
+          <input type="text" id="edit-user-${slot}" value="${message.user || ''}" placeholder="User">
+          <input type="date" id="edit-date-${slot}" value="${dateValue}" placeholder="Date">
+          <div style="display: flex; gap: 5px; margin-top: 10px;">
+            <button onclick="saveMessage('${slot}')">Save</button>
+            <button class="cancel-btn" onclick="document.getElementById('${formId}').style.display = 'none'">Cancel</button>
+          </div>
+        `;
+        return form;
+      }
+
+      window.saveMessage = function(oldSlot) {
+        console.log('Saving message for old slot:', oldSlot);
+        const newSlot = document.getElementById(`edit-slot-${oldSlot}`).value.trim() || oldSlot;
+        if (!newSlot.match(/^slot_\d+$/)) {
+          showError('Invalid slot format. Use "slot_X" (e.g., slot_10)');
+          return;
+        }
+        let dateInput = document.getElementById(`edit-date-${oldSlot}`).value;
+        if (/^\d{2}-\d{2}-\d{4}$/.test(dateInput)) {
+          const [day, month, year] = dateInput.split('-');
+          dateInput = `${year}-${month}-${day}`;
+        }
+        const updatedMessage = {
+          contactNumber: document.getElementById(`edit-contactNumber-${oldSlot}`).value || null,
+          idWorker: document.getElementById(`edit-idWorker-${oldSlot}`).value || null,
+          lastAction: document.getElementById(`edit-lastAction-${oldSlot}`).value || null,
+          parkingNotes: document.getElementById(`edit-parkingNotes-${oldSlot}`).value || null,
+          plate: document.getElementById(`edit-plate-${oldSlot}`).value || null,
+          timestamp: document.getElementById(`edit-timestamp-${oldSlot}`).value || null,
+          user: document.getElementById(`edit-user-${oldSlot}`).value || null,
+          date: dateInput || null
+        };
+        console.log('Updated message:', updatedMessage, 'New slot:', newSlot);
+
+        firebase.database().ref(`slot_message_user/${newSlot}`).once('value', (snapshot) => {
+          if (snapshot.exists() && newSlot !== oldSlot) {
+            showError(`Slot ${newSlot} already exists. Choose a different slot.`);
+            return;
+          }
+          firebase.database().ref(`slot_message_user/${newSlot}`).set(updatedMessage)
+            .then(() => {
+              if (newSlot !== oldSlot) {
+                return firebase.database().ref(`slot_message_user/${oldSlot}`).remove();
+              }
+            })
+            .then(() => {
+              showSuccess(`Message ${newSlot === oldSlot ? 'updated' : 'moved to new slot'} successfully`);
+              document.getElementById(`edit-form-${oldSlot}`).style.display = 'none';
+            })
+            .catch((error) => {
+              showError(`Failed to update message: ${error.message}`);
+            });
+        });
+      };
+
+      // Enhanced delete functionality with confirmation modal
+      window.deleteMessage = function(slot) {
+        const deleteModal = document.getElementById('deleteConfirmation');
+        const deleteMessage = document.getElementById('deleteMessage');
+        const confirmButton = document.getElementById('confirmDelete');
+        const cancelButton = document.getElementById('cancelDelete');
+        
+        deleteMessage.textContent = `Are you sure you want to permanently delete the message for ${slot.replace('_', ' ').toUpperCase()}? This action cannot be undone.`;
+        deleteModal.style.display = 'flex';
+        
+        // Remove any existing event listeners
+        const newConfirmButton = confirmButton.cloneNode(true);
+        const newCancelButton = cancelButton.cloneNode(true);
+        confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+        cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+        
+        // Add new event listeners
+        newConfirmButton.addEventListener('click', function() {
+          performDelete(slot);
+          deleteModal.style.display = 'none';
+        });
+        
+        newCancelButton.addEventListener('click', function() {
+          console.log('Deletion cancelled for slot:', slot);
+          deleteModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        deleteModal.addEventListener('click', function(e) {
+          if (e.target === deleteModal) {
+            deleteModal.style.display = 'none';
+          }
+        });
+      };
+
+      function performDelete(slot) {
+        console.log('Attempting to delete slot:', slot);
+        
+        // First check if the slot exists in Firebase
+        firebase.database().ref(`slot_message_user/${slot}`).once('value', (snapshot) => {
+          if (!snapshot.exists()) {
+            showError(`Message for ${slot.replace('_', ' ').toUpperCase()} does not exist in Firebase`);
+            console.warn(`No message found for slot: ${slot}`);
+            return;
+          }
+          
+          // Perform the deletion
+          firebase.database().ref(`slot_message_user/${slot}`).remove()
+            .then(() => {
+              console.log(`Successfully deleted message for slot: ${slot}`);
+              showSuccess(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
+              
+              // Update local data
+              messagesData = messagesData.filter(item => item.slot !== slot);
+              updateCustomersMessage();
+            })
+            .catch((error) => {
+              console.error(`Failed to delete message for slot ${slot}:`, error);
+              showError(`Failed to delete message: ${error.message}`);
+            });
+        }).catch((error) => {
+          console.error(`Error checking slot existence: ${error}`);
+          showError(`Error checking slot existence: ${error.message}`);
+        });
+      }
+
+      function refreshMessages() {
+        firebase.database().ref("slot_message_user").once("value", (snapshot) => {
+          const data = snapshot.val();
+          console.log('Customer Messages Data:', data);
+          messagesData = [];
+          if (data) {
+            for (const slot in data) {
+              messagesData.push({ slot, message: data[slot] });
+            }
+            updateCustomersMessage();
+          } else {
+            customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: darkgray;">No messages available</div>';
+            console.log('No customer messages available');
+          }
+        }, (error) => {
+          showError(`Failed to fetch customer messages: ${error.message}`);
+        });
+      }
+
+      function updateCustomersMessage() {
+        customersMessageList.innerHTML = '';
+
+        if (!messagesData.length) {
+          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: darkgray;">No messages available</div>';
+          console.log('No messages in messagesData');
+          return;
+        }
+
+        let sortedMessages = sortMessages([...messagesData]);
+
+        sortedMessages.forEach(({ slot, message }) => {
+          const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'customer-item';
+          itemDiv.innerHTML = `
+            <strong>${slot.replace('_', ' ').toUpperCase()}</strong>
+            <span><strong>Contact:</strong> ${contactNumber || 'N/A'}</span>
+            <span><strong>ID Worker:</strong> ${idWorker || 'N/A'}</span>
+            <span><strong>Last Action:</strong> ${lastAction || 'N/A'}</span>
+            <span><strong>Parking Notes:</strong> ${parkingNotes || 'N/A'}</span>
+            <span><strong>Plate:</strong> ${plate || 'N/A'}</span>
+            <span><strong>Timestamp:</strong> ${timestamp || 'N/A'}</span>
+            <span><strong>User:</strong> ${user || 'N/A'}</span>
+            <span><strong>Date:</strong> ${date || 'N/A'}</span>
+            <div class="customer-actions">
+              <button class="edit-btn" onclick="toggleEditForm('${slot}')">Edit</button>
+              <button class="delete-btn" onclick="deleteMessage('${slot}')">Delete</button>
+            </div>
+          `;
+          itemDiv.appendChild(showEditForm(slot, message));
+          customersMessageList.appendChild(itemDiv);
+        });
+      }
+
+      window.toggleEditForm = function(slot) {
+        const form = document.getElementById(`edit-form-${slot}`);
+        if (form) {
+          form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+        }
+      };
+
+      // Listen for real-time updates from Firebase
+      firebase.database().ref("slot_message_user").on("value", (snapshot) => {
+        const data = snapshot.val();
+        console.log('Real-time Customer Messages Data:', data);
+        messagesData = [];
+        if (data) {
+          for (const slot in data) {
+            messagesData.push({ slot, message: data[slot] });
+          }
+          updateCustomersMessage();
+        } else {
+          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: darkgray;">No messages available</div>';
+        }
+      }, (error) => {
+        showError(`Failed to fetch customer messages: ${error.message}`);
+      });
+
+      // Prevent undo/redo operations
+      document.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
+          event.preventDefault();
+          event.stopPropagation();
+          console.log('Undo/Redo is disabled');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

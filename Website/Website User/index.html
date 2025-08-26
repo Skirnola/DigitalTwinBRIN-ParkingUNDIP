@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>BRIN Digital Twin Parkir User</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website_user/blob/6e7fbc84b4b4ba7fae0470f3313d9cef8f47b8f5/logo-brin.png?raw=true">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            color: darkslategrey; 
+            overflow-x: hidden; 
+        }
+        body::before { 
+            content: ""; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: none; 
+            opacity: 0.2; 
+            z-index: -1; 
+        }
+        video#bg-video { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            z-index: -2; 
+            opacity: 0.4; 
+        }
+        header { 
+            background-image: linear-gradient(to right, lightseagreen, palevioletred); 
+            color: white; 
+            padding: 10px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: fixed; 
+            width: 100%; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+        }
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer; 
+        }
+        .logo img { 
+            height: 40px; 
+            vertical-align: middle; 
+        }
+        .logo span { 
+            margin-left: 10px; 
+            font-size: 16px; 
+            font-weight: bold; 
+        }
+        .header-right { 
+            display: flex; 
+            align-items: center; 
+        }
+        .header-right span { 
+            margin-right: 20px; 
+            font-size: 14px; 
+        }
+        .main-content { 
+            margin-left: 0; 
+            padding: 80px 20px 20px; 
+            min-height: 100vh; 
+        }
+        .main-content-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+        .toolbar { 
+            position: fixed; 
+            top: 60px; 
+            left: -400px; 
+            width: 200px; 
+            height: 100%; 
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred); 
+            padding: 15px; 
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); 
+            transition: left 0.3s ease-in-out; 
+            z-index: 999; 
+            overflow-y: auto; 
+        }
+        .toolbar.active { 
+            left: 0; 
+        }
+        .toolbar .feature-box { 
+            background-color: rgba(255, 255, 255, 0.9); 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-bottom: 16px; 
+            font-size: 13px; 
+        }
+        .toolbar .feature-box h3 { 
+            margin: 0 0 8px; 
+            font-size: 14px; 
+            color: black; 
+        }
+        .toolbar .feature-box button { 
+            width: 100%; 
+            padding: 6px; 
+            background-color: darkgrey; 
+            color: black; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 11px; 
+            margin-bottom: 4px; 
+            transition: background-color 0.3s; 
+        }
+        .toolbar .feature-box button:hover { 
+            background-color: darkslategrey; 
+            color: white; 
+        }
+        .toolbar .user-info { 
+            text-align: center; 
+        }
+        .toolbar .user-info img { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            margin-bottom: 8px; 
+        }
+        .toolbar .user-info span { 
+            display: block; 
+            margin: 4px 0; 
+            font-size: 11px; 
+            color: black; 
+        }
+        .toolbar .live-overview { 
+            text-align: left; 
+        }
+        .toolbar .live-overview .status { 
+            margin: 8px 0; 
+            font-size: 12px; 
+            color: black; 
+        }
+        .toolbar .live-overview .status span { 
+            font-weight: bold; 
+            color: #007bff; 
+        }
+        .overview, .user-details, .park-condition-2d, .about-us { 
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred); 
+            padding: 10px; 
+            border-radius: 8px; 
+            border: 2px solid #dc3545; 
+            min-height: 150px; 
+            color: white; 
+        }
+        .park-condition-2d { 
+            padding: 5px; 
+            min-height: 200px; 
+        }
+        .overview h1, .about-us h1, .user-details h2 { 
+            color: white; 
+        }
+        .stats { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 10px; 
+            margin-bottom: 10px; 
+            font-size: 12px; 
+        }
+        .stats div { 
+            background-color: rgba(255, 255, 255, 0.9); 
+            padding: 6px; 
+            border-radius: 5px; 
+            text-align: center; 
+            color: black; 
+        }
+        .stats span:first-child { 
+            display: block; 
+            font-size: 12px; 
+            font-weight: bold; 
+            color: #555; 
+            margin-bottom: 5px; 
+        }
+        .stats span:last-child { 
+            font-size: 12px; 
+            color: #007bff; 
+        }
+        .about-us .content { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            font-family: 'Times New Roman', Times, serif; 
+            background-color: rgba(255, 255, 255, 0.9); 
+            padding: 15px; 
+            border: 1px solid #000; 
+            border-radius: 4px; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+            color: black; 
+        }
+        .about-us img { 
+            width: 100%; 
+            max-width: 200px; 
+            height: auto; 
+            border: 2px solid #000; 
+            border-radius: 4px; 
+            margin: 0 auto; 
+            display: block; 
+        }
+        .about-us p { 
+            font-size: 14px; 
+            color: #000; 
+            margin: 0 0 10px; 
+            line-height: 1.5; 
+            text-align: justify; 
+            column-count: 2; 
+            column-gap: 20px; 
+            column-rule: 1px solid #ccc; 
+        }
+        .about-us a button { 
+            padding: 8px 12px; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 12px; 
+            transition: background-color 0.3s; 
+            display: block; 
+            margin: 0 auto; 
+        }
+        .about-us a button:hover { 
+            background-color: #0056b3; 
+        }
+        .user-details .detail { 
+            margin-bottom: 10px; 
+            font-size: 14px; 
+        }
+        .user-details .detail label { 
+            font-weight: bold; 
+            display: block; 
+            color: white; 
+        }
+        .user-details .detail input, .user-details .detail select, .user-details .detail textarea { 
+            width: 100%; 
+            padding: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            font-size: 14px; 
+            box-sizing: border-box; 
+            background-color: rgba(255, 255, 255, 0.9); 
+            color: black; 
+        }
+        .user-details .actions { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-top: 15px; 
+        }
+        .user-details .actions button { 
+            padding: 8px 12px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 12px; 
+            transition: background-color 0.3s; 
+        }
+        .user-details .actions .in-btn { 
+            background-color: green; 
+            color: white; 
+        }
+        .user-details .actions .in-btn:hover { 
+            background-color: darkgreen; 
+        }
+        .user-details .actions .out-btn { 
+            background-color: red; 
+            color: white; 
+        }
+        .user-details .actions .out-btn:hover { 
+            background-color: darkred; 
+        }
+        .parking-lot { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.5px; 
+            padding: 3px; 
+            margin-top: 50px; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .column.top { 
+            display: flex; 
+            flex-direction: row; 
+            gap: 5px; 
+            justify-content: center; 
+        }
+        .column.bottom { 
+            display: flex; 
+            flex-direction: row; 
+            gap: 5px; 
+            justify-content: center; 
+        }
+        .slot { 
+            border: 1px solid #ccc; 
+            padding: 5px; 
+            text-align: center; 
+            background-color: #e9ecef; 
+            font-size: 16px; 
+            border-radius: 5px; 
+            position: relative; 
+            width: 50px; 
+            height: 35px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+        }
+        .slot.occupied { 
+            background-color: yellow; 
+        }
+        .slot span { 
+            font-size: 16px; 
+            font-weight: bold; 
+        }
+        .slot .car { 
+            width: 40px; 
+            height: 21px; 
+            border-radius: 3px; 
+            position: absolute; 
+            left: 50%; 
+            top: 50%; 
+            transform: translate(-50%, -50%); 
+            display: none; 
+            transition: opacity 0.3s ease-in-out; 
+        }
+        .slot.occupied .car { 
+            display: block; 
+            animation: carEnter 0.5s ease-in-out; 
+        }
+        @keyframes carEnter { 
+            from { 
+                transform: translate(-50%, -50%) scale(0); 
+                opacity: 0; 
+            } 
+            to { 
+                transform: translate(-50%, -50%) scale(1); 
+                opacity: 1; 
+            } 
+        }
+        @keyframes carExit { 
+            from { 
+                transform: translate(-50%, -50%) scale(1); 
+                opacity: 1; 
+            } 
+            to { 
+                transform: translate(-50%, -50%) scale(0); 
+                opacity: 0; 
+            } 
+        }
+        .slot.occupied.exiting .car { 
+            animation: carExit 0.5s ease-in-out forwards; 
+        }
+        .tour-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0, 0, 0, 0.5); 
+            z-index: 2000; 
+            pointer-events: none; 
+        }
+        .tour-tooltip { 
+            position: absolute; 
+            background-color: rgba(255, 255, 255, 0.9); 
+            border: 2px solid #dc3545; 
+            border-radius: 8px; 
+            padding: 15px; 
+            max-width: 300px; 
+            text-align: center; 
+            font-family: Arial, sans-serif; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+            pointer-events: auto; 
+            animation: fadeIn 0.3s ease-in-out; 
+            z-index: 2001; 
+        }
+        .tour-tooltip h3 { 
+            color: #007bff; 
+            font-size: 16px; 
+            margin-bottom: 10px; 
+        }
+        .tour-tooltip p { 
+            font-size: 13px; 
+            color: #555; 
+            margin-bottom: 15px; 
+            line-height: 1.5; 
+        }
+        .tour-tooltip .tour-buttons { 
+            display: flex; 
+            justify-content: space-between; 
+            gap: 10px; 
+        }
+        .tour-tooltip button { 
+            padding: 8px 12px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 12px; 
+            transition: background-color 0.3s; 
+        }
+        .tour-tooltip .next-btn { 
+            background-color: #007bff; 
+            color: white; 
+        }
+        .tour-tooltip .next-btn:hover { 
+            background-color: #0056b3; 
+        }
+        .tour-tooltip .close-btn { 
+            background-color: #dc3545; 
+            color: white; 
+        }
+        .tour-tooltip .close-btn:hover { 
+            background-color: #c82333; 
+        }
+        .tour-tooltip:after { 
+            content: ""; 
+            position: absolute; 
+            border: 10px solid transparent; 
+            pointer-events: none; 
+        }
+        .tour-tooltip.right:after { 
+            border-right-color: rgba(255, 255, 255, 0.9); 
+            border-right-width: 10px; 
+            left: -20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+        .tour-tooltip.left:after { 
+            border-left-color: rgba(255, 255, 255, 0.9); 
+            border-left-width: 10px; 
+            right: -20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+        .tour-tooltip.top:after { 
+            border-top-color: rgba(255, 255, 255, 0.9); 
+            border-top-width: 10px; 
+            bottom: -20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+        }
+        .tour-tooltip.bottom:after { 
+            border-bottom-color: rgba(255, 255, 255, 0.9); 
+            border-bottom-width: 10px; 
+            top: -20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: scale(0.9); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+    </style>
+</head>
+<body>
+    <video id="bg-video" autoplay muted loop>
+        <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <header>
+        <div class="logo" id="toggleToolbar">
+            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+            <span>BRIN</span>
+            <span>Badan Riset Nasional</span>
+        </div>
+        <div class="header-right">
+            <span>Parking Management System</span>
+        </div>
+    </header>
+    <aside class="toolbar" id="toolbar">
+        <div class="feature-box user-info" id="userInfo">
+            <h3>User</h3>
+            <img id="profilePic" src="/assets/user.JPG" alt="User">
+            <span>Welcome Back</span>
+            <span id="userName"></span>
+            <button class="profile" onclick="window.location.href='profile.html'">Profile</button>
+            <button class="form-message" onclick="window.location.href='index.html'">Form Message</button>
+            <button class="logout">Log Out</button>
+        </div>
+        <div class="feature-box live-overview">
+            <h3>Live Overview</h3>
+            <div class="status">
+                <span id="availableSpots">0</span> Available Parking Spots
+            </div>
+            <div class="status">
+                <span id="occupiedSpots">0</span> Occupied Parking Spots
+            </div>
+            <div class="status">
+                Last Activity: <span id="lastActivity">None</span>
+            </div>
+            <button onclick="refreshOverview()">Refresh</button>
+        </div>
+    </aside>
+    <main class="main-content">
+        <div class="main-content-grid">
+            <div class="about-us">
+                <h1>About Us</h1>
+                <div class="content">
+                    <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+                    <p>BRIN Cisitu Bandung merupakan salah satu kawasan riset milik Badan Riset dan Inovasi Nasional yang berlokasi di Kawasan Sains dan Teknologi Samaun Samadikun, Jalan Sangkuriang, Dago, Kecamatan Coblong, Bandung. Kawasan ini menjadi pusat berbagai kegiatan penelitian dan inovasi, termasuk pengembangan kecerdasan artifisial, keamanan siber, dan teknologi telekomunikasi. Di sini, para peneliti, mahasiswa, dan praktisi dari berbagai institusi berkolaborasi dalam proyek-proyek unggulan seperti digitalisasi naskah kuno berbasis machine learning serta pengembangan solusi teknologi untuk kebutuhan industri dan masyarakat. Fasilitas yang memadai serta lingkungan yang kondusif menjadikan BRIN Cisitu Bandung sebagai salah satu pusat inovasi dan pengembangan ilmu pengetahuan terkemuka di Indonesia.</p>
+                    <a href="aboutus.html"><button>More Details</button></a>
+                </div>
+            </div>
+            <div class="overview">
+                <h1>Live Overview</h1>
+                <div class="stats">
+                    <div><span>Cars</span><span id="occupiedSlots">0 / 20</span></div>
+                    <div><span>Slots</span><span id="emptySlots">20 / 20</span></div>
+                    <div><span>Time</span><span id="currentTime"></span></div>
+                    <div><span>Loyalty Customers</span><span>3</span></div>
+                    <div><span>Total Cars In</span><span>74 Today</span></div>
+                    <div><span>Total Cars Out</span><span>32 Today</span></div>
+                </div>
+            </div>
+            <div class="user-details">
+                <h2>Form Message Parking</h2>
+                <div class="detail">
+                    <label for="detailName">Nama:</label>
+                    <input type="text" id="detailName" readonly>
+                </div>
+                <div class="detail">
+                    <label for="detailIdWorker">ID Karyawan:</label>
+                    <input type="text" id="detailIdWorker" readonly>
+                </div>
+                <div class="detail">
+                    <label for="detailPlate">Plat Nomor Mobil:</label>
+                    <input type="text" id="detailPlate" readonly>
+                </div>
+                <div class="detail">
+                    <label for="parkingDate">Tanggal:</label>
+                    <input type="date" id="parkingDate">
+                </div>
+                <div class="detail">
+                    <label for="contactNumber">Nomor Kontak:</label>
+                    <input type="tel" id="contactNumber" placeholder="Masukkan nomor kontak">
+                </div>
+                <div class="detail">
+                    <label for="parkingNotes">Catatan Parkir:</label>
+                    <textarea id="parkingNotes" placeholder="Masukkan catatan parkir" rows="3"></textarea>
+                </div>
+                <div class="detail">
+                    <label for="slotSelect">Pilih Slot Parkir:</label>
+                    <select id="slotSelect">
+                        <option value="">-- Pilih Slot --</option>
+                        <script>
+                            for (let i = 1; i <= 20; i++) {
+                                document.write(`<option value="slot_${i}">Slot ${i}</option>`);
+                            }
+                        </script>
+                    </select>
+                </div>
+                <div class="actions">
+                    <button class="in-btn">Mobil Masuk</button>
+                    <button class="out-btn">Mobil Keluar</button>
+                </div>
+            </div>
+            <div class="park-condition-2d">
+                <h2>Park Condition (2D)</h2>
+                <div class="parking-lot">
+                    <div class="column top">
+                        <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
+                        <div class="slot" data-slot="19"><span>19</span><div class="car"></div></div>
+                        <div class="slot" data-slot="18"><span>18</span><div class="car"></div></div>
+                        <div class="slot" data-slot="17"><span>17</span><div class="car"></div></div>
+                        <div class="slot" data-slot="16"><span>16</span><div class="car"></div></div>
+                        <div class="slot" data-slot="15"><span>15</span><div class="car"></div></div>
+                        <div class="slot" data-slot="14"><span>14</span><div class="car"></div></div>
+                        <div class="slot" data-slot="13"><span>13</span><div class="car"></div></div>
+                        <div class="slot" data-slot="12"><span>12</span><div class="car"></div></div>
+                    </div>
+                    <div class="column bottom">
+                        <div class="slot" data-slot="11"><span>11</span><div class="car"></div></div>
+                        <div class="slot" data-slot="10"><span>10</span><div class="car"></div></div>
+                        <div class="slot" data-slot="9"><span>9</span><div class="car"></div></div>
+                        <div class="slot" data-slot="8"><span>8</span><div class="car"></div></div>
+                        <div class="slot" data-slot="7"><span>7</span><div class="car"></div></div>
+                        <div class="slot" data-slot="6"><span>6</span><div class="car"></div></div>
+                        <div class="slot" data-slot="5"><span>5</span><div class="car"></div></div>
+                        <div class="slot" data-slot="4"><span>4</span><div class="car"></div></div>
+                        <div class="slot" data-slot="3"><span>3</span><div class="car"></div></div>
+                        <div class="slot" data-slot="2"><span>2</span><div class="car"></div></div>
+                        <div class="slot" data-slot="1"><span>1</span><div class="car"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tour-overlay" id="tourOverlay"></div>
+        <div class="tour-tooltip" id="tourTooltip" style="display: none;">
+            <h3 id="tooltipTitle"></h3>
+            <p id="tooltipText"></p>
+            <div class="tour-buttons">
+                <button class="next-btn" id="tourNextBtn">Next</button>
+                <button class="close-btn" id="tourCloseBtn">Close</button>
+            </div>
+        </div>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
+            authDomain: "digitaltwinparkingbrin.firebaseapp.com",
+            databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "digitaltwinparkingbrin",
+            storageBucket: "digitaltwinparkingbrin.appspot.com",
+            messagingSenderId: "608462498913",
+            appId: "1:608462498913:web:73695d8c91f923e2db8e20",
+            measurementId: "G-F1TRY65RTG"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref("slot_parking");
+        let slotSizes = {};
+
+        // Show Error Message
+        function showError(message) {
+            const errorElement = document.createElement('div');
+            errorElement.id = 'error-message';
+            errorElement.style.position = 'fixed';
+            errorElement.style.top = '10px';
+            errorElement.style.left = '50%';
+            errorElement.style.transform = 'translateX(-50%)';
+            errorElement.style.background = 'rgba(255, 0, 0, 0.8)';
+            errorElement.style.color = 'white';
+            errorElement.style.padding = '8px';
+            errorElement.style.borderRadius = '4px';
+            errorElement.style.fontSize = '12px';
+            errorElement.style.zIndex = '1001';
+            errorElement.textContent = message;
+            document.body.appendChild(errorElement);
+            setTimeout(() => {
+                errorElement.remove();
+            }, 5000);
+        }
+
+        // Update Parking Lot
+        function updateParkingLot(data) {
+            const totalSlots = 20;
+            let occupiedCount = 0;
+
+            for (let i = 1; i <= totalSlots; i++) {
+                const slotKey = `slot_${i}`;
+                const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
+                const isOccupied = data[slotKey]?.occupied === true;
+                const size = data[slotKey]?.size ? data[slotKey].size.toLowerCase() : 'none';
+                slotSizes[slotKey] = size;
+
+                if (slotEl) {
+                    if (isOccupied) {
+                        slotEl.classList.add("occupied");
+                        slotEl.querySelector(".car").style.display = "block";
+                        slotEl.querySelector(".car").style.backgroundColor = 
+                            size === 'small' ? "#0000FF" :
+                            size === 'medium' ? "#FFA500" :
+                            size === 'big' ? "#FF0000" :
+                            "#808080";
+                        occupiedCount++;
+                    } else {
+                        slotEl.classList.remove("occupied");
+                        slotEl.querySelector(".car").style.display = "none";
+                        slotEl.querySelector(".car").style.backgroundColor = "#808080";
+                    }
+                }
+            }
+
+            const emptyCount = totalSlots - occupiedCount;
+            updateLiveOverview(occupiedCount, emptyCount, totalSlots);
+            document.getElementById('availableSpots').textContent = emptyCount;
+            document.getElementById('occupiedSpots').textContent = occupiedCount;
+            document.getElementById('lastActivity').textContent = data.lastActivity || 'None';
+        }
+
+        // Update Live Overview
+        function updateLiveOverview(occupiedCount, emptyCount, totalSlots) {
+            document.getElementById('occupiedSlots').textContent = `${occupiedCount} / ${totalSlots}`;
+            document.getElementById('emptySlots').textContent = `${emptyCount} / ${totalSlots}`;
+        }
+
+        // Setup Firebase Listener
+        function setupFirebaseListener() {
+            dbRef.on("value", (snapshot) => {
+                const data = snapshot.val() || {};
+                updateParkingLot(data);
+            }, (error) => {
+                console.error("❌ Firebase read error:", error);
+                showError("Failed to fetch parking data. Please try again.");
+            });
+        }
+
+        // Send Slot Message
+        function sendSlotMessage(slotKey, action, user) {
+            if (!slotKey) {
+                showError('Pilih slot parkir terlebih dahulu!');
+                return;
+            }
+
+            const timestamp = new Date();
+            const optionsTime = { timeZone: 'Asia/Jakarta', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: false };
+            const timeString = new Intl.DateTimeFormat('en-US', optionsTime).format(timestamp) + ' WIB';
+            const dateInput = document.getElementById('parkingDate').value;
+            const dateString = dateInput ? dateInput : 'None';
+            const contactNumber = document.getElementById('contactNumber').value || 'None';
+            const parkingNotes = document.getElementById('parkingNotes').value || 'None';
+            const size = slotSizes[slotKey] || 'none';
+
+            const updates = {};
+            updates[`slot_parking/${slotKey}/occupied`] = action === 'Mobil Masuk';
+            updates[`slot_parking/${slotKey}/size`] = size;
+            updates[`slot_parking/lastActivity`] = `${action} at ${timeString}`;
+            updates[`slot_message_user/${slotKey}`] = {
+                lastAction: action,
+                user: user.username,
+                idWorker: user.idWorker,
+                plate: user.plateNumber || 'None',
+                contactNumber: contactNumber,
+                parkingNotes: parkingNotes,
+                date: dateString,
+                timestamp: timeString,
+                size: size
+            };
+
+            firebase.database().ref().update(updates).then(() => {
+                showError(`✅ ${action} untuk ${slotKey} berhasil dikirim!`);
+                document.getElementById('contactNumber').value = '';
+                document.getElementById('parkingNotes').value = '';
+            }).catch(err => {
+                console.error('❌ Gagal mengirim pesan:', err);
+                showError('Gagal mengirim pesan. Silakan coba lagi.');
+            });
+        }
+
+        // Refresh Overview
+        function refreshOverview() {
+            setupFirebaseListener();
+        }
+
+        // Tour Steps Configuration
+        const tourSteps = [
+            {
+                element: '.about-us',
+                title: "Tentang Perusahaan",
+                text: "Ini adalah bagian About Us yang menjelaskan tentang BRIN Cisitu Bandung sebagai pusat riset dan inovasi. Klik tombol 'More Details' untuk informasi lebih lanjut.",
+                position: 'right'
+            },
+            {
+                element: '.overview',
+                title: "Live Overview",
+                text: "Bagian ini menampilkan statistik parkir secara real-time, seperti jumlah mobil yang terparkir, slot kosong, waktu terkini, dan aktivitas harian mobil.",
+                position: 'left'
+            },
+            {
+                element: '.user-details',
+                title: "Form Message Parking",
+                text: "Gunakan form ini untuk mengisi data parkir pengguna, seperti nama, ID karyawan, plat nomor, tanggal, nomor kontak, dan catatan parkir. Pilih slot parkir dan klik 'Mobil Masuk' atau 'Mobil Keluar'.",
+                position: 'right'
+            },
+            {
+                element: '.park-condition-2d',
+                title: "Park Condition 2D",
+                text: "Tampilan 2D ini menunjukkan status slot parkir. Slot kuning berarti ditempati, dengan warna mobil biru (kecil), kuning (sedang), merah (besar), atau abu-abu (kosong).",
+                position: 'left'
+            }
+        ];
+
+        let currentTourStep = 0;
+
+        function startTour() {
+            document.getElementById('tourOverlay').style.display = 'block';
+            showTooltip(currentTourStep);
+        }
+
+        function showTooltip(step) {
+            const tooltip = document.getElementById('tourTooltip');
+            const title = document.getElementById('tooltipTitle');
+            const text = document.getElementById('tooltipText');
+            const nextBtn = document.getElementById('tourNextBtn');
+
+            const targetElement = document.querySelector(tourSteps[step].element);
+            if (!targetElement) return;
+
+            title.textContent = tourSteps[step].title;
+            text.textContent = tourSteps[step].text;
+            tooltip.style.display = 'block';
+            tooltip.className = 'tour-tooltip ' + tourSteps[step].position;
+
+            const rect = targetElement.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            let left, top;
+
+            switch (tourSteps[step].position) {
+                case 'right':
+                    left = rect.right + 10;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    break;
+                case 'left':
+                    left = rect.left - tooltipRect.width - 10;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    break;
+                case 'top':
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.top - tooltipRect.height - 10;
+                    break;
+                case 'bottom':
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.bottom + 10;
+                    break;
+            }
+
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+
+            nextBtn.textContent = step === tourSteps.length - 1 ? 'Finish' : 'Next';
+        }
+
+        function endTour() {
+            document.getElementById('tourOverlay').style.display = 'none';
+            document.getElementById('tourTooltip').style.display = 'none';
+            currentTourStep = 0;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Authentication
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                alert('Silakan login terlebih dahulu!');
+                window.location.replace('login.html');
+                return;
+            }
+            document.getElementById('userName').textContent = currentUser.username;
+            document.getElementById('profilePic').src = currentUser.profilePic || '/assets/user.JPG';
+            document.getElementById('detailName').value = currentUser.username;
+            document.getElementById('detailIdWorker').value = currentUser.idWorker;
+            document.getElementById('detailPlate').value = currentUser.plateNumber || 'None';
+
+            const today = new Date();
+            const dateString = today.toISOString().split('T')[0];
+            document.getElementById('parkingDate').value = dateString;
+
+            // Logout
+            document.querySelector('.logout').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                alert('Berhasil logout!');
+                window.location.replace('login.html');
+            });
+
+            // Toggle Toolbar
+            document.getElementById('toggleToolbar').addEventListener('click', () => {
+                document.getElementById('toolbar').classList.toggle('active');
+            });
+
+            // Real-time Clock
+            function updateClock() {
+                const now = new Date();
+                const options = { timeZone: 'Asia/Jakarta', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: false };
+                document.getElementById('currentTime').textContent = new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB';
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Setup Firebase Listener
+            setupFirebaseListener();
+
+            // Button Event Listeners
+            document.querySelector('.in-btn').addEventListener('click', () => {
+                const selectedSlot = document.getElementById('slotSelect').value;
+                sendSlotMessage(selectedSlot, 'Mobil Masuk', currentUser);
+            });
+
+            document.querySelector('.out-btn').addEventListener('click', () => {
+                const selectedSlot = document.getElementById('slotSelect').value;
+                sendSlotMessage(selectedSlot, 'Mobil Keluar', currentUser);
+            });
+
+            // Prevent Undo/Redo
+            document.addEventListener('keydown', (event) => {
+                if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
+                    event.preventDefault();
+                    console.log('Undo/Redo is disabled');
+                }
+            });
+
+            // Prevent Navigation
+            window.addEventListener('popstate', (event) => {
+                event.preventDefault();
+                if (!localStorage.getItem('currentUser')) {
+                    window.location.replace('login.html');
+                } else {
+                    history.replaceState(null, null, window.location.href);
+                }
+            });
+
+            // Tour Event Listeners
+            document.getElementById('tourNextBtn').addEventListener('click', () => {
+                currentTourStep++;
+                if (currentTourStep < tourSteps.length) {
+                    showTooltip(currentTourStep);
+                } else {
+                    endTour();
+                }
+            });
+
+            document.getElementById('tourCloseBtn').addEventListener('click', endTour);
+
+            // Start Tour
+            startTour();
+        });
+    </script>
+</body>
+</html>

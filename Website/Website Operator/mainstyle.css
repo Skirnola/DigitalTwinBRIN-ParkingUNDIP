@@ -1,0 +1,425 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: darkslategrey;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    opacity: 0.2; /* Opacity 20% for background video */
+    z-index: -1; /* Keep behind content */
+}
+
+video#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure video covers the area */
+    z-index: -2; /* Behind the ::before pseudo-element */
+    opacity: 0.4;
+}
+
+header {
+    background-image: linear-gradient(to right, lightseagreen , palevioletred);
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.logo img {
+    height: 40px;
+    vertical-align: middle;
+}
+
+.logo span {
+    margin-left: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-right span {
+    margin-right: 20px;
+    font-size: 14px;
+}
+
+.main-content {
+    margin-left: 0; /* Tidak ada margin kiri karena toolbar ada di kiri */
+    padding: 80px 20px 20px;
+    min-height: 100vh;
+}
+
+.main-content-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for 2x2 layout */
+    gap: 15px; /* Spacing between sections */
+    margin-bottom: 20px;
+}
+
+.toolbar {
+    position: fixed;
+    top: 60px;
+    left: -400px; /* Mulai tersembunyi di kiri */
+    width: 200px; /* Lebar toolbar lebih kecil */
+    height: 100%;
+    background-color: #00aaff; /* Warna biru sama dengan header */
+    padding: 15px; /* Padding lebih kecil untuk tampilan minimalis */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease-in-out;
+    z-index: 999;
+    overflow-y: auto;
+}
+
+.toolbar.active {
+    left: 0; /* Muncul saat aktif */
+}
+
+.toolbar .feature-box {
+    background-color: lightgrey; /* Warna merah BRIN untuk kotak fitur */
+    border-radius: 8px;
+    padding: 12px; /* Padding lebih kecil */
+    margin-bottom: 8px; /* Adjusted to 0.5rem (8px) for slight separation */
+    color: white;
+    font-size: 13px; /* Font lebih kecil */
+}
+
+.toolbar {
+    position: fixed;
+    top: 60px;
+    left: -400px; /* Mulai tersembunyi di kiri */
+    width: 200px; /* Lebar toolbar lebih kecil */
+    height: 100%;
+    background-image: linear-gradient(to bottom, lightseagreen , palevioletred);
+    padding: 15px; /* Padding lebih kecil untuk tampilan minimalis */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease-in-out;
+    z-index: 999;
+    overflow-y: auto;
+}
+
+.toolbar.active {
+    left: 0; /* Muncul saat aktif */
+}
+
+.toolbar .feature-box {
+    background-color: lightgrey; /* Warna merah BRIN untuk kotak fitur */
+    border-radius: 8px;
+    padding: 12px; /* Padding lebih kecil */
+    margin-bottom: 16px; /* Increased to 1rem (16px) for clearer separation */
+    color: white;
+    font-size: 13px; /* Font lebih kecil */
+}
+
+.toolbar .feature-box h3 {
+    margin: 0 0 8px;
+    font-size: 14px; /* Font lebih kecil untuk judul */
+    color: black;
+}
+
+.toolbar .feature-box button {
+    width: 100%;
+    padding: 6px; /* Padding tombol lebih kecil */
+    background-color: darkgrey;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 11px; /* Font lebih kecil */
+    margin-bottom: 4px; /* Added spacing between buttons within feature-box */
+    transition: background-color 0.3s;
+}
+
+.toolbar .feature-box button:hover {
+    background-color: darkslategrey;
+}
+
+.toolbar .user-info {
+    text-align: center;
+}
+
+.toolbar .user-info img {
+    width: 40px; /* Gambar pengguna lebih kecil */
+    height: 40px;
+    border-radius: 50%;
+    margin-bottom: 8px;
+}
+
+.toolbar .user-info span {
+    display: block;
+    margin: 4px 0;
+    font-size: 11px; /* Font lebih kecil */
+    color: black;
+}
+
+.overview, .history, .customers, .park-condition {
+    background-color: lightgrey;
+    padding: 10px; /* Reduced padding for compactness */
+    border-radius: 8px;
+    border: 2px solid #dc3545; /* Border merah untuk konsistensi */
+    min-height: 150px; /* Ensure sections are compact but consistent */
+}
+
+.park-condition-2d {
+    background-color: lightgrey;
+    padding: 15px; /* Keep original padding for 2D section */
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 2px solid #dc3545; /* Border merah untuk konsistensi */
+}
+
+.overview h1 {
+    margin: 0 0 10px;
+    color: #007bff;
+    font-size: 18px; /* Smaller font size */
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for compactness */
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 12px; /* Smaller font size */
+}
+
+.history h2, .customers h2, .park-condition h2, .park-condition-2d h2 {
+    margin-top: 0;
+    color: #007bff;
+    font-size: 16px; /* Smaller font size */
+}
+
+.history-list {
+    max-height: 100px; /* Reduced height for compactness */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.history-item, .customer-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0; /* Reduced padding */
+    font-size: 10px; /* Smaller font size */
+    align-items: center;
+}
+
+.history-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.history-controls input,
+.history-controls select {
+    font-size: 10px; /* Smaller font size */
+    padding: 5px;
+}
+
+.pagination {
+    font-size: 10px; /* Smaller font size */
+}
+
+.status.in { color: green; }
+.status.out { color: red; }
+
+.parking-lot {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.slot {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    background-color: #e9ecef;
+    font-size: 12px;
+    border-radius: 5px;
+    position: relative;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.slot.occupied {
+    background-color: yellow;
+}
+
+.slot.occupied .car {
+    display: block;
+    animation: carEnter 0.5s ease-in-out;
+}
+
+.slot:not(.occupied) .car {
+    display: none;
+}
+
+.car {
+    width: 20px;
+    height: 20px;
+    background-color: #333;
+    border-radius: 3px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease-in-out;
+}
+
+@keyframes carEnter {
+    from {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes carExit {
+    from {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+}
+
+.slot.occupied.exiting .car {
+    animation: carExit 0.5s ease-in-out forwards;
+}
+
+.camera-placeholder {
+    height: 80px; /* Compact height */
+    background-color: #333;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px dashed #fff;
+    font-size: 10px; /* Smaller font size */
+    border-radius: 5px;
+    transition: all 0.3s ease; /* Smooth transition for expansion */
+}
+
+.camera-placeholder.expanded {
+    height: 160px; /* Expanded height */
+    width: 100%; /* Full width of parent */
+    max-width: 300px; /* Optional: limit max width */
+    font-size: 12px; /* Slightly larger font when expanded */
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    padding-top: 80px; /* Menyesuaikan dengan header */
+}
+
+.login-box {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-box h2 {
+    margin-top: 0;
+    color: #007bff;
+    font-size: 20px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.login-box a {
+    display: block;
+    margin: 10px 0;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 12px;
+}
+.slot .car {
+    width: 30px;
+    height: 15px;
+    background-color: red;
+    border-radius: 3px;
+    margin-top: 5px;
+    display: none;
+}
+.slot.occupied .car {
+    display: block;
+}
+.status.in {
+    color: green;
+    font-weight: bold;
+}
+
+.status.out {
+    color: red;
+    font-weight: bold;
+}
+

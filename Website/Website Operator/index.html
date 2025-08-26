@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>BRIN Live Overview</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/blob/575171d0e9964327d99950733c2b48cea0c59d72/logo-brin.png?raw=true">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: darkslategrey;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: none;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        video#bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.4;
+        }
+
+        header {
+            background-image: linear-gradient(to right, lightseagreen, palevioletred);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo img {
+            height: 40px;
+            vertical-align: middle;
+        }
+
+        .logo span {
+            margin-left: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-right span {
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        .main-content {
+            margin-left: 0;
+            padding: 80px 20px 20px;
+            min-height: 100vh;
+        }
+
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .toolbar {
+            position: fixed;
+            top: 60px;
+            left: -400px;
+            width: 200px;
+            height: 100%;
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 15px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease-in-out;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .toolbar.active {
+            left: 0;
+        }
+
+        .toolbar .feature-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .toolbar .feature-box h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            color: black;
+        }
+
+        .toolbar .feature-box button {
+            width: 100%;
+            padding: 6px;
+            background-color: darkgrey;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-bottom: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .toolbar .feature-box button:hover {
+            background-color: darkslategrey;
+            color: white;
+        }
+
+        .toolbar .user-info {
+            text-align: center;
+        }
+
+        .toolbar .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+
+        .toolbar .user-info span {
+            display: block;
+            margin: 4px 0;
+            font-size: 11px;
+            color: black;
+        }
+
+        .overview {
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #dc3545;
+            min-height: 150px;
+            position: relative;
+            color: white;
+        }
+
+        .overview h1 {
+            margin: 0 0 15px;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 10px;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .stats div {
+            background-color: rgba(233, 236, 239, 0.9);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stats span:first-child {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: black;
+            margin-bottom: 6px;
+        }
+
+        .stats span:last-child {
+            font-size: 12px;
+            color: black;
+        }
+
+        .history, .park-condition, .park-condition-2d {
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #dc3545;
+            min-height: 150px;
+            position: relative;
+            color: white;
+        }
+
+        .park-condition-2d {
+            padding: 5px;
+            min-height: 200px;
+        }
+
+        .history h2, .park-condition h2, .park-condition-2d h2 {
+            margin: 0 0 15px;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .history-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .history-filters input,
+        .history-filters select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 13px;
+            flex: 1;
+            min-width: 120px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+        }
+
+        .history-table-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
+
+        .history-table th, .history-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: black;
+        }
+
+        .history-table th {
+            background-color: rgba(233, 236, 239, 0.9);
+            color: black;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .history-table td {
+            background-color: transparent;
+        }
+
+        .history-table tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        .history-table tbody tr:hover {
+            background-color: rgba(245, 245, 245, 0.7);
+        }
+
+        .status.in {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status.out {
+            color: red;
+            font-weight: bold;
+        }
+
+        td:nth-child(4):where(:not(:empty)) {
+            color: black;
+        }
+        td:nth-child(4):where(:not(:empty))[data-size="small"] {
+            color: #0000FF;
+        }
+        td:nth-child(4):where(:not(:empty))[data-size="medium"] {
+            color: #FFA500;
+        }
+        td:nth-child(4):where(:not(:empty))[data-size="big"] {
+            color: #FF0000;
+        }
+        td:nth-child(4):where(:not(:empty))[data-size="none"] {
+            color: black;
+        }
+
+        .parking-lot {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5px;
+            padding: 3px;
+            margin-top: 50px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .column.top {
+            gap: 5px;
+        }
+
+        .column.bottom {
+            gap: 5px;
+        }
+
+        .slot {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: center;
+            background-color: #e9ecef;
+            font-size: 16px;
+            border-radius: 5px;
+            position: relative;
+            width: 50px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .slot.occupied {
+            background-color: yellow;
+        }
+
+        .slot span {
+            font-size: 16px;
+            font-weight: bold;
+            color: darkslategrey;
+        }
+
+        .slot .car {
+            width: 40px;
+            height: 21px;
+            border-radius: 3px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .slot.occupied .car {
+            display: block;
+            animation: carEnter 0.5s ease-in-out;
+        }
+
+        @keyframes carEnter {
+            from {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes carExit {
+            from {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .slot.occupied.exiting .car {
+            animation: carExit 0.5s ease-in-out forwards;
+        }
+
+        #toggleCameraBtn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        #cameraContainer {
+            width: 100%;
+            position: relative;
+            min-height: 300px;
+        }
+
+        #threeContainer {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        #threeError {
+            display: none;
+            color: red;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            z-index: 100;
+            display: none;
+        }
+
+        #controls button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            margin: 2px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        #controls button:hover {
+            background: #45a049;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 102;
+            display: none;
+        }
+
+        #error-message {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 102;
+            display: none;
+        }
+
+        #fullscreenBtn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 101;
+            display: none;
+        }
+
+        #collapseBtn {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 101;
+            display: none;
+        }
+
+        #collapseBtn:hover {
+            background-color: #c82333;
+        }
+
+        :fullscreen #collapseBtn {
+            display: block;
+        }
+
+        .tour-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .tour-tooltip {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            padding: 15px;
+            max-width: 300px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            pointer-events: auto;
+            animation: fadeIn 0.3s ease-in-out;
+            z-index: 2001;
+        }
+
+        .tour-tooltip h3 {
+            color: #007bff;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .tour-tooltip p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .tour-tooltip .tour-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .tour-tooltip button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .tour-tooltip .next-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tour-tooltip .next-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .tour-tooltip .close-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .tour-tooltip .close-btn:hover {
+            background-color: #c82333;
+        }
+
+        .tour-tooltip:after {
+            content: "";
+            position: absolute;
+            border: 10px solid transparent;
+            pointer-events: none;
+        }
+
+        .tour-tooltip.right:after {
+            border-right-color: rgba(255, 255, 255, 0.9);
+            border-right-width: 10px;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tour-tooltip.left:after {
+            border-left-color: rgba(255, 255, 255, 0.9);
+            border-left-width: 10px;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tour-tooltip.top:after {
+            border-top-color: rgba(255, 255, 255, 0.9);
+            border-top-width: 10px;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .tour-tooltip.bottom:after {
+            border-bottom-color: rgba(255, 255, 255, 0.9);
+            border-bottom-width: 10px;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <video id="bg-video" autoplay muted loop>
+        <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <header>
+        <div class="logo" id="toggleToolbar">
+            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+            <span>BRIN</span>
+            <span>Badan Riset Nasional</span>
+        </div>
+        <div class="header-right">
+            <span>Parking Management System</span>
+        </div>
+    </header>
+    <aside class="toolbar" id="toolbar">
+        <div class="feature-box user-info" id="userInfo">
+            <h3>User</h3>
+            <img id="profilePic" src="/assets/user.JPG" alt="User">
+            <span>Welcome Back</span>
+            <span id="userName"></span>
+            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
+            <button class="logout">Log Out</button>
+        </div>
+        <div class="feature-box">
+            <h2>Parking Management System</h2>
+            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
+            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
+            <button class="export-data" onclick="window.location.href='/exportdata.html'">Export Data</button>
+            <button class="helpdesk" onclick="window.location.href='/helpdesk.html'">Helpdesk</button>
+            <button class="parking-analysis" onclick="window.location.href='/parkiranalysis.html'">Parking Analysis</button>
+        </div>
+    </aside>
+    <main class="main-content">
+        <div class="main-content-grid">
+            <div class="overview">
+                <h1>Live Overview</h1>
+                <div class="stats">
+                    <div>
+                        <span>Cars</span>
+                        <span id="occupiedSlots">0 / 20</span>
+                    </div>
+                    <div>
+                        <span>Slots</span>
+                        <span id="emptySlots">20 / 20</span>
+                    </div>
+                    <div>
+                        <span>Time</span>
+                        <span id="currentTime"></span>
+                    </div>
+                    <div>
+                        <span>Loyalty Customers</span>
+                        <span>3</span>
+                    </div>
+                    <div>
+                        <span>Total Cars In</span>
+                        <span id="totalCarsIn">0 Today</span>
+                    </div>
+                    <div>
+                        <span>Total Cars Out</span>
+                        <span id="totalCarsOut">0 Today</span>
+                    </div>
+                </div>
+            </div>
+            <div class="history">
+                <h2>Slot History</h2>
+                <div class="history-filters">
+                    <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 18)">
+                    <input type="date" id="filterDate">
+                    <select id="filterStatus">
+                        <option value="">All Status</option>
+                        <option value="terisi">Terisi</option>
+                        <option value="kosong">Kosong</option>
+                    </select>
+                </div>
+                <div class="history-table-container">
+                    <table class="history-table" id="slotHistoryTable">
+                        <thead>
+                            <tr>
+                                <th>Slot</th>
+                                <th>Timestamp</th>
+                                <th>Status</th>
+                                <th>Size</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="park-condition">
+                <h2>Park Condition (3D)</h2>
+                <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
+                    <div id="threeContainer"></div>
+                    <div id="threeError">3D visualization failed to load.</div>
+                    <button id="toggleCameraBtn">Click to Expand</button>
+                    <div id="controls">
+                        <div style="margin-bottom: 6px; font-weight: bold; font-size: 10px;">Camera Controls</div>
+                        <button onclick="resetCamera()">Reset View</button>
+                        <button onclick="topView()">Top View</button>
+                        <button onclick="sideView()">Side View</button>
+                    </div>
+                    <div id="loading">Loading parking data...</div>
+                    <div id="error-message"></div>
+                    <button id="fullscreenBtn">Full Screen</button>
+                    <button id="collapseBtn">Click to Collapse</button>
+                </div>
+            </div>
+            <div class="park-condition-2d">
+                <h2>Park Condition (2D)</h2>
+                <div class="parking-lot">
+                    <div class="column top">
+                        <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
+                        <div class="slot" data-slot="19"><span>19</span><div class="car"></div></div>
+                        <div class="slot" data-slot="18"><span>18</span><div class="car"></div></div>
+                        <div class="slot" data-slot="17"><span>17</span><div class="car"></div></div>
+                        <div class="slot" data-slot="16"><span>16</span><div class="car"></div></div>
+                        <div class="slot" data-slot="15"><span>15</span><div class="car"></div></div>
+                        <div class="slot" data-slot="14"><span>14</span><div class="car"></div></div>
+                        <div class="slot" data-slot="13"><span>13</span><div class="car"></div></div>
+                        <div class="slot" data-slot="12"><span>12</span><div class="car"></div></div>
+                    </div>
+                    <div class="column bottom">
+                        <div class="slot" data-slot="11"><span>11</span><div class="car"></div></div>
+                        <div class="slot" data-slot="10"><span>10</span><div class="car"></div></div>
+                        <div class="slot" data-slot="9"><span>9</span><div class="car"></div></div>
+                        <div class="slot" data-slot="8"><span>8</span><div class="car"></div></div>
+                        <div class="slot" data-slot="7"><span>7</span><div class="car"></div></div>
+                        <div class="slot" data-slot="6"><span>6</span><div class="car"></div></div>
+                        <div class="slot" data-slot="5"><span>5</span><div class="car"></div></div>
+                        <div class="slot" data-slot="4"><span>4</span><div class="car"></div></div>
+                        <div class="slot" data-slot="3"><span>3</span><div class="car"></div></div>
+                        <div class="slot" data-slot="2"><span>2</span><div class="car"></div></div>
+                        <div class="slot" data-slot="1"><span>1</span><div class="car"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tour-overlay" id="tourOverlay"></div>
+        <div class="tour-tooltip" id="tourTooltip" style="display: none;">
+            <h3 id="tooltipTitle"></h3>
+            <p id="tooltipText"></p>
+            <div class="tour-buttons">
+                <button class="next-btn" id="tourNextBtn">Next</button>
+                <button class="close-btn" id="tourCloseBtn">Close</button>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+        // Authentication System
+        class User {
+            constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
+                this.username = username;
+                this.email = email;
+                this.password = password;
+                this.idWorker = idWorker;
+                this.profilePic = profilePic;
+            }
+        }
+
+        class AuthSystem {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('users')) || [];
+            }
+
+            register(username, email, password, idWorker, profilePic) {
+                const userExists = this.users.some(user => user.email === email);
+                if (userExists) {
+                    throw new Error('User already exists!');
+                }
+                const user = new User(username, email, password, idWorker, profilePic);
+                this.users.push(user);
+                localStorage.setItem('users', JSON.stringify(this.users));
+                return user;
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                if (user) {
+                    return user;
+                }
+                throw new Error('Invalid email or password!');
+            }
+        }
+
+        const auth = new AuthSystem();
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
+            authDomain: "digitaltwinparkingbrin.firebaseapp.com",
+            databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "digitaltwinparkingbrin",
+            storageBucket: "digitaltwinparkingbrin.appspot.com",
+            messagingSenderId: "608462498913",
+            appId: "1:608462498913:web:73695d8c91f923e2db8e20",
+            measurementId: "G-F1TRY65RTG"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref("slot_parking");
+        const slotHistoryRef = firebase.database().ref("slot_history");
+
+        // 3D Visualization Variables
+        let scene, camera, renderer, cars = [], allSlots = [], animationFrame;
+        let slotStatuses = {};
+        let slotSizes = {};
+        const loadingElement = document.getElementById('loading');
+        const errorElement = document.getElementById('error-message');
+        let ambientLight, directionalLight, sun;
+
+        // Show Error Message
+        function showError(message) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Initialize Three.js Scene
+        function initScene() {
+            console.log("Initializing Three.js scene...");
+            const threeContainer = document.getElementById('threeContainer');
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000022);
+            camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / (threeContainer.clientHeight || 300), 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            threeContainer.appendChild(renderer.domElement);
+
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            scene.add(ambientLight);
+            directionalLight = new THREE.DirectionalLight(0xffffbb, 0.8);
+            directionalLight.position.set(50, 50, 25);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+
+            const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+            const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            scene.add(sun);
+
+            const groundGeometry = new THREE.PlaneGeometry(200, 50);
+            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+        }
+
+        // Create Parking Slots
+        function createParkingSlots() {
+            console.log("Creating parking slots...");
+            const slotMaterial = new THREE.MeshLambertMaterial({ color: 0x808080 });
+            const slotGeometry = new THREE.BoxGeometry(3.5, 0.15, 6.5);
+
+            // Slots 1-11 (Top row, right to left)
+            for (let i = 0; i < 11; i++) {
+                const slot = new THREE.Mesh(slotGeometry, slotMaterial);
+                slot.position.set((10 - i) * 6 - 30, 0.1, 5);
+                slot.receiveShadow = true;
+                scene.add(slot);
+                allSlots.push({
+                    position: slot.position.clone(),
+                    slotNumber: i + 1
+                });
+            }
+
+            // Slots 12-20 (Bottom row, right to left)
+            for (let i = 0; i < 9; i++) {
+                const slot = new THREE.Mesh(slotGeometry, slotMaterial);
+                slot.position.set((8 - i) * 6 - 24, 0.1, -5);
+                slot.receiveShadow = true;
+                scene.add(slot);
+                allSlots.push({
+                    position: slot.position.clone(),
+                    slotNumber: i + 12
+                });
+            }
+
+            createSlotLabels();
+        }
+
+        // Create Slot Labels
+        function createSlotLabels() {
+            console.log("Creating slot labels...");
+            allSlots.forEach((slotData) => {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = 128;
+                canvas.height = 64;
+                context.font = '40px Arial';
+                context.fillStyle = 'white';
+                context.textAlign = 'center';
+                context.fillText(slotData.slotNumber.toString(), 64, 45);
+                const texture = new THREE.CanvasTexture(canvas);
+                const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+                const sprite = new THREE.Sprite(spriteMaterial);
+                sprite.position.set(slotData.position.x, 2, slotData.position.z);
+                sprite.scale.set(2, 1, 1);
+                scene.add(sprite);
+            });
+        }
+
+        // Create Cars with Animation and Size-Based Colors
+        function createCars() {
+            console.log("Creating cars...");
+            const carGeometry = new THREE.BoxGeometry(2, 2, 4);
+
+            allSlots.forEach((slotData, index) => {
+                const slotKey = `slot_${slotData.slotNumber}`;
+                let carColor = 0x808080;
+                let targetScale = 0;
+                if (slotStatuses[slotKey]) {
+                    switch (slotSizes[slotKey]?.toLowerCase()) {
+                        case 'small':
+                            carColor = 0x0000FF;
+                            targetScale = 0.7;
+                            break;
+                        case 'medium':
+                            carColor = 0xFFA500;
+                            targetScale = 1.0;
+                            break;
+                        case 'big':
+                            carColor = 0xFF0000;
+                            targetScale = 1.3;
+                            break;
+                        default:
+                            carColor = 0x808080;
+                            targetScale = 1.0;
+                            break;
+                    }
+                }
+
+                const carMaterial = new THREE.MeshLambertMaterial({ 
+                    color: carColor,
+                    transparent: true,
+                    opacity: slotStatuses[slotKey] ? 1 : 0
+                });
+                const car = new THREE.Mesh(carGeometry, carMaterial);
+                car.position.set(slotData.position.x, 0.5, slotData.position.z);
+                car.castShadow = true;
+                car.scale.set(slotStatuses[slotKey] ? targetScale : 0, slotStatuses[slotKey] ? targetScale : 0, slotStatuses[slotKey] ? targetScale : 0);
+                scene.add(car);
+                cars.push({
+                    mesh: car,
+                    material: carMaterial,
+                    slotIndex: slotData.slotNumber,
+                    targetOpacity: slotStatuses[slotKey] ? 1 : 0,
+                    currentOpacity: slotStatuses[slotKey] ? 1 : 0,
+                    targetScale: slotStatuses[slotKey] ? targetScale : 0,
+                    currentScale: slotStatuses[slotKey] ? targetScale : 0,
+                    animationSpeed: 0.05,
+                    isAnimating: false,
+                    bobOffset: Math.random() * Math.PI * 2,
+                    originalY: car.position.y
+                });
+            });
+        }
+
+        // Update Live Overview Stats
+        function updateLiveOverview(occupiedCount, emptyCount, totalSlots) {
+            const occupiedElement = document.getElementById('occupiedSlots');
+            const emptyElement = document.getElementById('emptySlots');
+            if (occupiedElement) {
+                occupiedElement.textContent = `${occupiedCount} / ${totalSlots}`;
+            }
+            if (emptyElement) {
+                emptyElement.textContent = `${emptyCount} / ${totalSlots}`;
+            }
+            console.log(`🔄 Stats updated: ${occupiedCount} occupied, ${emptyCount} empty`);
+        }
+
+        // Update Sun Position and Sky Color
+        function updateSunPosition() {
+            const now = new Date();
+            const options = { timeZone: 'Asia/Jakarta' };
+            const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+            const dayFraction = (hours - 6) / 12;
+            const theta = Math.PI * dayFraction;
+            const sunRadius = 100;
+            directionalLight.position.set(
+                sunRadius * Math.cos(theta),
+                sunRadius * Math.sin(theta),
+                25 * Math.sin(theta)
+            );
+            sun.position.copy(directionalLight.position);
+            if (hours >= 0 && hours < 7) {
+                scene.background = new THREE.Color(0x000033); // Dark blue for 00:00–07:00
+                directionalLight.intensity = 0.2;
+                ambientLight.intensity = 0.3;
+                sun.material.color.set(0xffff99);
+            } else if (hours >= 7 && hours < 17) {
+                scene.background = new THREE.Color(0x87CEEB); // Light blue for 07:00–17:00
+                directionalLight.intensity = 0.8 * Math.sin(theta);
+                ambientLight.intensity = 0.6;
+                sun.material.color.set(0xffff00);
+            } else {
+                scene.background = new THREE.Color(0x000011); // Blackish blue for 17:00–00:00
+                directionalLight.intensity = 0.1;
+                ambientLight.intensity = 0.2;
+                sun.material.color.set(0xffcc66);
+            }
+        }
+
+        // Animation Loop
+        function animate() {
+            animationFrame = requestAnimationFrame(animate);
+            updateSunPosition();
+            const time = Date.now() * 0.001;
+            let animatingCars = 0;
+            let visibleCars = 0;
+
+            cars.forEach((car, index) => {
+                if (car.isAnimating) {
+                    animatingCars++;
+                    const opacityDiff = car.targetOpacity - car.currentOpacity;
+                    const scaleDiff = car.targetScale - car.currentScale;
+                    if (Math.abs(opacityDiff) < 0.01 && Math.abs(scaleDiff) < 0.01) {
+                        car.currentOpacity = car.targetOpacity;
+                        car.currentScale = car.targetScale;
+                        car.isAnimating = false;
+                        console.log(`✅ Animation complete for Slot ${index + 1}: opacity=${car.currentOpacity}, scale=${car.currentScale}`);
+                    } else {
+                        car.currentOpacity += opacityDiff * car.animationSpeed;
+                        car.currentScale += scaleDiff * car.animationSpeed;
+                        car.material.opacity = car.currentOpacity;
+                        car.mesh.scale.set(car.currentScale, car.currentScale, car.currentScale);
+                    }
+                }
+                if (car.currentOpacity > 0.1) {
+                    visibleCars++;
+                    const bobAmount = 0.05;
+                    car.mesh.position.y = car.originalY + Math.sin(time * 2 + car.bobOffset) * bobAmount;
+                }
+            });
+
+            if (Math.floor(time) % 5 === 0 && Math.floor(time * 10) % 10 === 0) {
+                console.log(`🎬 Animation Status: ${animatingCars} animating, ${visibleCars} visible cars`);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Camera Controls
+        window.resetCamera = function() {
+            camera.position.set(0, 20, 40);
+            camera.lookAt(0, 0, 0);
+            console.log("🔄 Camera reset to default view");
+        }
+
+        window.topView = function() {
+            camera.position.set(0, 50, 0);
+            camera.lookAt(0, 0, 0);
+            console.log("🔄 Camera set to top view");
+        }
+
+        window.sideView = function() {
+            camera.position.set(60, 15, 0);
+            camera.lookAt(0, 0, 0);
+            console.log("🔄 Camera set to side view");
+        }
+
+        // Initialize 3D Visualization
+        function initThree() {
+            console.log("Initializing 3D visualization...");
+            try {
+                const threeContainer = document.getElementById('threeContainer');
+                console.log("threeContainer dimensions:", threeContainer.clientWidth, threeContainer.clientHeight);
+                initScene();
+                createParkingSlots();
+                createCars();
+                resetCamera();
+                animate();
+                setupFirebaseListener();
+                document.getElementById('threeError').style.display = 'none';
+                document.getElementById('controls').style.display = 'block';
+            } catch (error) {
+                console.error("❌ Three.js initialization error:", error);
+                document.getElementById('threeError').style.display = 'block';
+                showError("3D visualization failed to load.");
+            }
+        }
+
+        // Cleanup 3D Visualization
+        function cleanupThree() {
+            console.log("Cleaning up 3D visualization...");
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+            }
+            if (renderer) {
+                renderer.domElement.remove();
+                renderer.dispose();
+            }
+            renderer = null;
+            document.getElementById('controls').style.display = 'none';
+        }
+
+        // Firebase Listener for slot_parking
+        function setupFirebaseListener() {
+            if (!dbRef) {
+                console.error("❌ Database not initialized!");
+                showError("Database not initialized. Please refresh the page.");
+                return;
+            }
+
+            console.log("🔗 Setting up Firebase listener for slot_parking...");
+            console.log("📋 Slot Layout:");
+            console.log("   Baris Atas (Z=5): Slot 1-11 dari KANAN ke KIRI");
+            console.log("   Baris Bawah (Z=-5): Slot 12-20 dari KANAN ke KIRI");
+
+            loadingElement.style.display = 'block';
+            dbRef.on("value", (snapshot) => {
+                loadingElement.style.display = 'none';
+                const data = snapshot.val();
+                if (!data) {
+                    console.warn("❌ No data received from Firebase");
+                    showError("No parking data available. Please check Firebase.");
+                    for (let i = 1; i <= 20; i++) {
+                        slotStatuses[`slot_${i}`] = false;
+                        slotSizes[`slot_${i}`] = 'none';
+                        const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
+                        if (slotEl) {
+                            slotEl.classList.remove("occupied");
+                            slotEl.querySelector(".car").style.display = "none";
+                            slotEl.querySelector(".car").style.backgroundColor = "#808080";
+                        }
+                        if (cars[i-1]) {
+                            cars[i-1].targetOpacity = 0;
+                            cars[i-1].targetScale = 0;
+                            cars[i-1].isAnimating = true;
+                            cars[i-1].material.color.set(0x808080);
+                        }
+                    }
+                    updateLiveOverview(0, 20, 20);
+                    return;
+                }
+
+                console.log("📊 Firebase data received:", data);
+
+                let occupiedCount = 0;
+                const totalSlots = 20;
+
+                for (let i = 1; i <= totalSlots; i++) {
+                    const slotKey = `slot_${i}`;
+                    const slotData = data[slotKey] || { occupied: false, size: 'none' };
+                    let newStatus = slotData.occupied === true;
+                    let newSize = slotData.size ? slotData.size.toLowerCase() : 'none';
+                    slotStatuses[slotKey] = newStatus;
+                    slotSizes[slotKey] = newSize;
+
+                    // Update 2D Visualization
+                    const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
+                    if (slotEl) {
+                        if (newStatus) {
+                            slotEl.classList.add("occupied");
+                            slotEl.querySelector(".car").style.display = "block";
+                            slotEl.querySelector(".car").style.backgroundColor = 
+                                newSize === 'small' ? "#0000FF" : 
+                                newSize === 'medium' ? "#FFA500" : 
+                                newSize === 'big' ? "#FF0000" : 
+                                "#808080";
+                            occupiedCount++;
+                        } else {
+                            slotEl.classList.remove("occupied");
+                            slotEl.querySelector(".car").style.display = "none";
+                            slotEl.querySelector(".car").style.backgroundColor = "#808080";
+                        }
+                    }
+
+                    // Update 3D Visualization
+                    if (cars[i-1]) {
+                        let carColor = 0x808080;
+                        let targetScale = 1.0;
+                        if (newStatus) {
+                            switch (newSize) {
+                                case 'small':
+                                    carColor = 0x0000FF;
+                                    targetScale = 0.7;
+                                    break;
+                                case 'medium':
+                                    carColor = 0xFFA500;
+                                    targetScale = 1.0;
+                                    break;
+                                case 'big':
+                                    carColor = 0xFF0000;
+                                    targetScale = 1.3;
+                                    break;
+                                default:
+                                    carColor = 0x808080;
+                                    targetScale = 1.0;
+                                    break;
+                            }
+                        }
+                        cars[i-1].material.color.set(carColor);
+                        cars[i-1].targetOpacity = newStatus ? 1 : 0;
+                        cars[i-1].targetScale = newStatus ? targetScale : 0;
+                        if (cars[i-1].currentOpacity !== (newStatus ? 1 : 0) || cars[i-1].currentScale !== (newStatus ? targetScale : 0)) {
+                            cars[i-1].isAnimating = true;
+                        }
+                        console.log(`🚗 Slot ${i}: ${newStatus ? 'OCCUPIED' : 'AVAILABLE'} - Size: ${newSize}, Color: #${carColor.toString(16).padStart(6, '0')}, Target opacity=${cars[i-1].targetOpacity}, scale=${cars[i-1].targetScale}`);
+                    }
+                }
+
+                const emptyCount = totalSlots - occupiedCount;
+                console.log(`📈 Final count: ${occupiedCount} occupied, ${emptyCount} available out of ${totalSlots} total`);
+                updateLiveOverview(occupiedCount, emptyCount, totalSlots);
+            }, (error) => {
+                loadingElement.style.display = 'none';
+                console.error("❌ Firebase read error:", error);
+                showError("Failed to fetch parking data. Please try again.");
+            });
+        }
+
+        // Tour Steps Configuration
+        const tourSteps = [
+            {
+                element: 'header',
+                title: "Petunjuk Website",
+                text: "Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, 3D Viewer VR, Helpdesk, dan Parking Analysis.",
+                position: 'bottom'
+            },
+            {
+                element: '.overview',
+                title: "Live Overview",
+                text: "Menampilkan statistik terkini seperti jumlah slot terisi, kosong, waktu saat ini, pelanggan loyal, dan total mobil masuk/keluar hari ini.",
+                position: 'right'
+            },
+            {
+                element: '.history',
+                title: "Slot History",
+                text: "Menampilkan riwayat status slot parkir. Gunakan filter untuk mencari berdasarkan slot, tanggal, atau status (terisi/kosong).",
+                position: 'left'
+            },
+            {
+                element: '.park-condition',
+                title: "Park Condition (3D)",
+                text: "Visualisasi 3D area parkir. Klik 'Click to Expand' untuk melihat model interaktif. Gunakan kontrol kamera untuk navigasi. Warna mobil: biru (kecil), kuning (sedang), merah (besar), abu-abu (kosong).",
+                position: 'right'
+            },
+            {
+                element: '.park-condition-2d',
+                title: "Park Condition (2D)",
+                text: "Menampilkan peta 2D slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil sesuai ukuran dari Firebase.",
+                position: 'left'
+            }
+        ];
+
+        let currentTourStep = 0;
+
+        function startTour() {
+            document.getElementById('tourOverlay').style.display = 'block';
+            showTooltip(currentTourStep);
+        }
+
+        function showTooltip(step) {
+            const tooltip = document.getElementById('tourTooltip');
+            const title = document.getElementById('tooltipTitle');
+            const text = document.getElementById('tooltipText');
+            const nextBtn = document.getElementById('tourNextBtn');
+
+            const targetElement = document.querySelector(tourSteps[step].element);
+            if (!targetElement) {
+                console.error(`Element ${tourSteps[step].element} not found!`);
+                endTour();
+                return;
+            }
+
+            title.textContent = tourSteps[step].title;
+            text.textContent = tourSteps[step].text;
+            tooltip.style.display = 'block';
+            tooltip.className = 'tour-tooltip ' + tourSteps[step].position;
+
+            const rect = targetElement.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            let left, top;
+
+            switch (tourSteps[step].position) {
+                case 'right':
+                    left = rect.right + 10;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    break;
+                case 'left':
+                    left = rect.left - tooltipRect.width - 10;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    break;
+                case 'top':
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.top - tooltipRect.height - 10;
+                    break;
+                case 'bottom':
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.bottom + 10;
+                    break;
+            }
+
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+
+            nextBtn.textContent = step === tourSteps.length - 1 ? 'Finish' : 'Next';
+        }
+
+        function endTour() {
+            document.getElementById('tourOverlay').style.display = 'none';
+            document.getElementById('tourTooltip').style.display = 'none';
+            currentTourStep = 0;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Authentication
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            const profilePic = document.getElementById('profilePic');
+            if (!currentUser) {
+                alert('Silakan login terlebih dahulu!');
+                window.location.replace('/login.html');
+                return;
+            } else {
+                userName.textContent = currentUser.username;
+                profilePic.src = currentUser.profilePic || '/assets/user.JPG';
+            }
+
+            // Logout
+            document.querySelector('.logout').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                alert('Berhasil logout!');
+                window.location.replace('/login.html');
+            });
+
+            // Toggle Toolbar
+            const toggleToolbar = document.getElementById('toggleToolbar');
+            const toolbar = document.getElementById('toolbar');
+            toggleToolbar.addEventListener('click', () => {
+                toolbar.classList.toggle('active');
+            });
+
+            // Real-time Clock
+            function updateClock() {
+                try {
+                    const now = new Date();
+                    const options = {
+                        timeZone: 'Asia/Jakarta',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    };
+                    const timeString = new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB';
+                    const currentTimeElement = document.getElementById('currentTime');
+                    if (currentTimeElement) {
+                        currentTimeElement.textContent = timeString;
+                    }
+                } catch (error) {
+                    console.error('Kesalahan pembaruan jam:', error);
+                }
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Slot History Update with Filtering and Total Cars In/Out Calculation
+            let historyDataArray = [];
+
+            slotHistoryRef.on("value", (snapshot) => {
+                console.log("Firebase slot_history data:", snapshot.val());
+                const historyData = snapshot.val();
+                historyDataArray = [];
+
+                if (!historyData) {
+                    console.warn("No slot history data available.");
+                    renderHistoryTable();
+                    document.getElementById('totalCarsIn').textContent = '0 Today';
+                    document.getElementById('totalCarsOut').textContent = '0 Today';
+                    return;
+                }
+
+                Object.keys(historyData).forEach((slotKey) => {
+                    const slotLogs = historyData[slotKey];
+                    Object.entries(slotLogs).forEach(([timestamp, entry]) => {
+                        const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
+                        const slotNumber = slotKey.split("_")[1];
+                        const size = entry.size ? entry.size.charAt(0).toUpperCase() + entry.size.slice(1).toLowerCase() : 'none';
+                        historyDataArray.push({
+                            slot: slotNumber,
+                            timestamp: timestamp,
+                            status: status,
+                            size: size
+                        });
+                    });
+                });
+
+                historyDataArray.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+
+                const today = new Date().toISOString().split('T')[0];
+                let totalIn = 0;
+                let totalOut = 0;
+                historyDataArray.forEach((entry) => {
+                    const entryDate = entry.timestamp.split(' ')[0];
+                    if (entryDate === today) {
+                        if (entry.status === 'terisi') totalIn++;
+                        else if (entry.status === 'kosong') totalOut++;
+                    }
+                });
+
+                document.getElementById('totalCarsIn').textContent = `${totalIn} Today`;
+                document.getElementById('totalCarsOut').textContent = `${totalOut} Today`;
+                console.log(`📊 Total Cars In: ${totalIn}, Total Cars Out: ${totalOut} for ${today}`);
+
+                renderHistoryTable();
+            }, (error) => {
+                console.error("Error fetching slot history:", error);
+                showError("Failed to fetch slot history data.");
+                document.getElementById('totalCarsIn').textContent = '0 Today';
+                document.getElementById('totalCarsOut').textContent = '0 Today';
+            });
+
+            function renderHistoryTable() {
+                const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
+                slotHistoryTable.innerHTML = "";
+
+                const filterSlot = document.getElementById('filterSlot').value.trim();
+                const filterDate = document.getElementById('filterDate').value;
+                const filterStatus = document.getElementById('filterStatus').value;
+
+                historyDataArray.forEach((entry) => {
+                    const entryDate = entry.timestamp.split(' ')[0];
+                    if (filterSlot && entry.slot !== filterSlot) return;
+                    if (filterDate && entryDate !== filterDate) return;
+                    if (filterStatus && entry.status !== filterStatus) return;
+
+                    const row = slotHistoryTable.insertRow();
+                    row.insertCell(0).textContent = entry.slot;
+                    row.insertCell(1).textContent = entry.timestamp;
+                    row.insertCell(2).textContent = entry.status;
+                    const sizeCell = row.insertCell(3);
+                    sizeCell.textContent = entry.size;
+                    sizeCell.setAttribute('data-size', entry.size.toLowerCase());
+
+                    if (entry.status === 'terisi') {
+                        row.cells[2].className = 'status in';
+                    } else if (entry.status === 'kosong') {
+                        row.cells[2].className = 'status out';
+                    }
+                });
+            }
+
+            document.getElementById('filterSlot').addEventListener('input', renderHistoryTable);
+            document.getElementById('filterDate').addEventListener('change', renderHistoryTable);
+            document.getElementById('filterStatus').addEventListener('change', renderHistoryTable);
+
+            // 3D Visualization Toggle
+            const toggleCameraBtn = document.getElementById('toggleCameraBtn');
+            const threeContainer = document.getElementById('threeContainer');
+            let isExpanded = false;
+
+            toggleCameraBtn.addEventListener('click', () => {
+                console.log("Toggling 3D visualization, isExpanded:", isExpanded);
+                isExpanded = !isExpanded;
+                toggleCameraBtn.textContent = isExpanded ? 'Click to Collapse' : 'Click to Expand';
+                if (isExpanded) {
+                    console.log("Expanding 3D view");
+                    threeContainer.style.display = 'block';
+                    document.getElementById('controls').style.display = 'block';
+                    document.getElementById('fullscreenBtn').style.display = 'block';
+                    if (!scene) {
+                        initThree();
+                    } else {
+                        renderer = new THREE.WebGLRenderer({ antialias: true });
+                        renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
+                        renderer.shadowMap.enabled = true;
+                        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                        threeContainer.appendChild(renderer.domElement);
+                        animate();
+                    }
+                } else {
+                    console.log("Collapsing 3D view");
+                    threeContainer.style.display = 'none';
+                    document.getElementById('fullscreenBtn').style.display = 'none';
+                    document.getElementById('collapseBtn').style.display = 'none';
+                    cleanupThree();
+                }
+            });
+
+            // Full Screen and Collapse Button
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const collapseBtn = document.getElementById('collapseBtn');
+
+            function toggleFullScreen() {
+                const threeContainer = document.getElementById('threeContainer');
+                if (!document.fullscreenElement) {
+                    threeContainer.requestFullscreen().catch(err => {
+                        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+
+            function handleCollapse() {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+                if (isExpanded) {
+                    isExpanded = false;
+                    toggleCameraBtn.textContent = 'Click to Expand';
+                    threeContainer.style.display = 'none';
+                    document.getElementById('fullscreenBtn').style.display = 'none';
+                    document.getElementById('collapseBtn').style.display = 'none';
+                    cleanupThree();
+                }
+            }
+
+            fullscreenBtn.addEventListener('click', toggleFullScreen);
+            collapseBtn.addEventListener('click', handleCollapse);
+
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    document.getElementById('collapseBtn').style.display = 'block';
+                } else {
+                    document.getElementById('collapseBtn').style.display = 'none';
+                    if (isExpanded) {
+                        isExpanded = false;
+                        toggleCameraBtn.textContent = 'Click to Expand';
+                        threeContainer.style.display = 'none';
+                        document.getElementById('fullscreenBtn').style.display = 'none';
+                        cleanupThree();
+                    }
+                }
+            });
+
+            // Handle Window Resize
+            window.addEventListener('resize', () => {
+                if (scene && renderer) {
+                    const threeContainer = document.getElementById('threeContainer');
+                    camera.aspect = threeContainer.clientWidth / (threeContainer.clientHeight || 300);
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
+                    console.log("Resized renderer:", threeContainer.clientWidth, threeContainer.clientHeight);
+                }
+            });
+
+            // Mouse Controls for 3D
+            let mouseDown = false;
+            let mouseX = 0;
+            let mouseY = 0;
+
+            threeContainer.addEventListener('mousedown', (event) => {
+                mouseDown = true;
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+            });
+
+            threeContainer.addEventListener('mouseup', () => {
+                mouseDown = false;
+            });
+
+            threeContainer.addEventListener('mousemove', (event) => {
+                if (!mouseDown || !scene) return;
+                const deltaX = event.clientX - mouseX;
+                const deltaY = event.clientY - mouseY;
+                const spherical = new THREE.Spherical();
+                spherical.setFromVector3(camera.position);
+                spherical.theta -= deltaX * 0.01;
+                spherical.phi += deltaY * 0.01;
+                spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+                camera.position.setFromSpherical(spherical);
+                camera.lookAt(0, 0, 0);
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+            });
+
+            threeContainer.addEventListener('wheel', (event) => {
+                if (!scene) return;
+                const zoomSpeed = 0.1;
+                const direction = event.deltaY > 0 ? 1 : -1;
+                camera.position.multiplyScalar(1 + direction * zoomSpeed);
+                const distance = camera.position.length();
+                if (distance < 10) camera.position.multiplyScalar(10 / distance);
+                if (distance > 200) camera.position.multiplyScalar(200 / distance);
+                event.preventDefault();
+            });
+
+            // Prevent Undo/Redo and Navigation
+            document.addEventListener('keydown', (event) => {
+                if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
+                    event.preventDefault();
+                    console.log('Undo/Redo is disabled');
+                }
+            });
+
+            window.addEventListener('popstate', (event) => {
+                event.preventDefault();
+                if (!localStorage.getItem('currentUser')) {
+                    window.location.replace('/login.html');
+                } else {
+                    history.replaceState(null, null, window.location.href);
+                }
+            });
+
+            // Tour Event Listeners
+            document.getElementById('tourNextBtn').addEventListener('click', () => {
+                currentTourStep++;
+                if (currentTourStep < tourSteps.length) {
+                    showTooltip(currentTourStep);
+                } else {
+                    endTour();
+                }
+            });
+
+            document.getElementById('tourCloseBtn').addEventListener('click', endTour);
+
+            // Start the tour
+            startTour();
+        });
+    </script>
+</body>
+</html>

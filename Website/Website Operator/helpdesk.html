@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>BRIN Helpdesk</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/blob/575171d0e9964327d99950733c2b48cea0c59d72/logo-brin.png?raw=true">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: darkslategrey;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: none;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        video#bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.4;
+        }
+
+        header {
+            background-image: linear-gradient(to right, lightseagreen, palevioletred);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo img {
+            height: 40px;
+            vertical-align: middle;
+        }
+
+        .logo span {
+            margin-left: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-right span {
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        .main-content {
+            margin-left: 0;
+            padding: 80px 20px 20px;
+            min-height: 100vh;
+        }
+
+        .toolbar {
+            position: fixed;
+            top: 60px;
+            left: -400px;
+            width: 200px;
+            height: 100%;
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 15px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease-in-out;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .toolbar.active {
+            left: 0;
+        }
+
+        .toolbar .feature-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .toolbar .feature-box h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            color: black;
+        }
+
+        .toolbar .feature-box button {
+            width: 100%;
+            padding: 6px;
+            background-color: darkgrey;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-bottom: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .toolbar .feature-box button:hover {
+            background-color: darkslategrey;
+            color: white;
+        }
+
+        .toolbar .user-info {
+            text-align: center;
+        }
+
+        .toolbar .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+
+        .toolbar .user-info span {
+            display: block;
+            margin: 4px 0;
+            font-size: 11px;
+            color: black;
+        }
+
+        .helpdesk-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .contact-form, .faq, .contact-info {
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #dc3545;
+            min-height: 300px;
+            color: white;
+        }
+
+        .contact-form h2, .faq h2, .contact-info h2 {
+            margin-top: 0;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .contact-form form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+        }
+
+        .contact-form button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .contact-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .faq .faq-item {
+            margin-bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .faq .faq-item h3 {
+            font-size: 16px;
+            color: black;
+            margin: 0 0 5px;
+            cursor: pointer;
+        }
+
+        .faq .faq-item p {
+            font-size: 14px;
+            color: black;
+            margin: 0;
+            display: none;
+        }
+
+        .faq .faq-item.active p {
+            display: block;
+        }
+
+        .contact-info .contact-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .contact-info .contact-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 14px;
+            color: white;
+        }
+
+        .contact-info .contact-list li span.icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        #error-message {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1001;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <video id="bg-video" autoplay muted loop>
+        <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <header>
+        <div class="logo" id="toggleToolbar">
+            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+            <span>BRIN</span>
+            <span>Badan Riset Nasional</span>
+        </div>
+        <div class="header-right">
+            <span>Parking Management System</span>
+        </div>
+    </header>
+    <aside class="toolbar" id="toolbar">
+        <div class="feature-box user-info" id="userInfo">
+            <h3>Operator</h3>
+            <img id="profilePic" src="/assets/user.JPG" alt="Pengguna">
+            <span>Welcome Back!</span>
+            <span id="userName"></span>
+            <button class="profile" onclick="window.location.href='/profile.html'">Profil</button>
+            <button class="logout">logout</button>
+        </div>
+        <div class="feature-box">
+            <h2>Parking Management System</h2>
+            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
+            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
+            <button class="export-data" onclick="window.location.href='/exportdata.html'">Export Data</button>
+            <button class="helpdesk" onclick="window.location.href='/helpdesk.html'">Helpdesk</button>
+            <button class="parking-analysis" onclick="window.location.href='/parkiranalysis.html'">Parking Analysis</button>
+        </div>
+    </aside>
+    <main class="main-content">
+        <div id="error-message"></div>
+        <div class="helpdesk-content">
+            <div class="contact-form">
+                <h2>Hubungi Kami</h2>
+                <form id="contactForm">
+                    <input type="text" id="name" placeholder="Nama Anda" required>
+                    <input type="email" id="email" placeholder="Email Anda" required>
+                    <textarea id="message" placeholder="Pesan Anda" rows="5" required></textarea>
+                    <button type="submit">Kirim</button>
+                </form>
+            </div>
+            <div class="faq">
+                <h2>Pertanyaan yang Sering Diajukan</h2>
+                <div class="faq-item">
+                    <h3>Bagaimana cara melihat status parkir secara real-time?</h3>
+                    <p>Pada halaman "Ikhtisar Langsung", Anda dapat melihat jumlah slot parkir yang terisi dan kosong, waktu terkini, serta visualisasi 2D dan 3D kondisi parkir.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Bagaimana cara memfilter riwayat slot parkir?</h3>
+                    <p>Di halaman "Ikhtisar Langsung" bagian "Riwayat Slot", gunakan filter untuk mencari berdasarkan nomor slot, tanggal, atau status (terisi/kosong).</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Bagaimana cara melihat visualisasi 3D area parkir?</h3>
+                    <p>Pada halaman "Ikhtisar Langsung", klik tombol "Click to Expand" di bagian "Kondisi Parkir (3D)" untuk melihat model 3D interaktif dengan kontrol kamera.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Bagaimana cara mengunduh data parkir?</h3>
+                    <p>Klik tombol "Ekspor Data" pada toolbar untuk mengunduh data parkir dalam format CSV dari halaman "Ekspor Data".</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Apa yang harus dilakukan jika data parkir tidak diperbarui?</h3>
+                    <p>Pastikan koneksi internet stabil dan cek akses ke database Firebase. Jika masalah berlanjut, hubungi tim dukungan melalui formulir "Hubungi Kami".</p>
+                </div>
+            </div>
+        </div>
+        <div class="contact-info">
+            <h2>Informasi Kontak</h2>
+            <ul class="contact-list">
+                <li><span class="icon">📧</span> <strong>Email:</strong> dukungan@brin.go.id</li>
+                <li><span class="icon">📞</span> <strong>Telepon:</strong> +62 21 1234 5678</li>
+                <li><span class="icon">🏢</span> <strong>Alamat:</strong> Kawasan LIPI Bandung (BRIN Bandung-Cisitu)-Samaun Samadikun, Indonesia</li>
+                <li><span class="icon">⏰</span> <strong>Jam Operasional:</strong> Senin - Jumat, 08:00 - 16:00 WIB</li>
+            </ul>
+        </div>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+        // Authentication System
+        class User {
+            constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
+                this.username = username;
+                this.email = email;
+                this.password = password;
+                this.idWorker = idWorker;
+                this.profilePic = profilePic;
+            }
+        }
+
+        class AuthSystem {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('users')) || [];
+            }
+
+            register(username, email, password, idWorker, profilePic) {
+                const userExists = this.users.some(user => user.email === email);
+                if (userExists) {
+                    throw new Error('Pengguna sudah terdaftar!');
+                }
+                const user = new User(username, email, password, idWorker, profilePic);
+                this.users.push(user);
+                localStorage.setItem('users', JSON.stringify(this.users));
+                return user;
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                if (user) {
+                    return user;
+                }
+                throw new Error('Email atau kata sandi salah!');
+            }
+        }
+
+        const auth = new AuthSystem();
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
+            authDomain: "digitaltwinparkingbrin.firebaseapp.com",
+            databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "digitaltwinparkingbrin",
+            storageBucket: "digitaltwinparkingbrin.appspot.com",
+            messagingSenderId: "608462498913",
+            appId: "1:608462498913:web:73695d8c91f923e2db8e20",
+            measurementId: "G-F1TRY65RTG"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref("parkir_message_helpdesk");
+
+        // Show Error Message
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Authentication
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            const profilePic = document.getElementById('profilePic');
+            if (!currentUser) {
+                alert('Silakan login terlebih dahulu!');
+                window.location.replace('/login.html');
+                return;
+            } else {
+                userName.textContent = currentUser.username;
+                profilePic.src = currentUser.profilePic || '/assets/user.JPG';
+            }
+
+            // Logout
+            document.querySelector('.logout').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                alert('Berhasil keluar!');
+                window.location.replace('/login.html');
+            });
+
+            // Toggle Toolbar
+            const toggleToolbar = document.getElementById('toggleToolbar');
+            const toolbar = document.getElementById('toolbar');
+            toggleToolbar.addEventListener('click', () => {
+                toolbar.classList.toggle('active');
+            });
+
+            // FAQ Toggle
+            const faqItems = document.querySelectorAll('.faq-item h3');
+            faqItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const faqItem = item.parentElement;
+                    faqItem.classList.toggle('active');
+                });
+            });
+
+            // Contact Form Submission
+            const contactForm = document.getElementById('contactForm');
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const message = document.getElementById('message').value.trim();
+
+                if (!name || !email || !message) {
+                    showError('Harap isi semua kolom.');
+                    return;
+                }
+
+                const timestamp = new Date().toISOString();
+                const messageData = {
+                    name,
+                    email,
+                    message,
+                    timestamp,
+                    userId: currentUser.idWorker || 'anonim'
+                };
+
+                dbRef.push(messageData)
+                    .then(() => {
+                        alert('Pesan berhasil dikirim!');
+                        contactForm.reset();
+                    })
+                    .catch((error) => {
+                        console.error('Gagal mengirim pesan:', error);
+                        showError('Gagal mengirim pesan. Silakan coba lagi.');
+                    });
+            });
+
+            // Prevent Undo/Redo and Navigation
+            document.addEventListener('keydown', (event) => {
+                if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    console.log('Fungsi undo/redo dinonaktifkan');
+                }
+            });
+
+            window.addEventListener('popstate', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (!localStorage.getItem('currentUser')) {
+                    window.location.replace('/login.html');
+                } else {
+                    history.replaceState(null, null, window.location.href);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

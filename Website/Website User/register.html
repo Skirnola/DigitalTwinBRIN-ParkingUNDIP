@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>BRIN Register</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website_user/blob/6e7fbc84b4b4ba7fae0470f3313d9cef8f47b8f5/logo-brin.png?raw=true">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #d3d3d3; /* Latar belakang abu-abu untuk layar utama */
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            z-index: -1; /* Agar background di belakang konten */
+            animation: slideshow 20s infinite; /* 5 images × 4 seconds = 20 seconds */
+        }
+
+        header {
+            background-image: linear-gradient(to right, lightseagreen, palevioletred);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo img {
+            height: 40px;
+            vertical-align: middle;
+        }
+
+        .logo span {
+            margin-left: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-right span {
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            padding-top: 80px; /* Menyesuaikan dengan header */
+        }
+
+        .welcome-message {
+            color: whitesmoke; /* Match login-box h2 color */
+            font-size: 24px; /* Prominent but not overpowering */
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px; /* Space between welcome message and login box */
+            width: 300px; /* Match login-box width for alignment */
+        }
+
+        .login-box {
+            background-color: rgba(89, 158, 163, 0.4); /* 20% opacity white background */
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-box h2 {
+            margin-top: 0;
+            color: whitesmoke;
+            font-size: 20px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 1); /* Opaque background for readability */
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 10px;
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred); /* Opaque for readability */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .login-box a {
+            display: block;
+            margin: 10px 0;
+            color: whitesmoke; /* Changed to whitesmoke for better contrast */
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        @keyframes slideshow {
+            0% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin1.jpg?raw=true');
+                opacity: 0.2;
+            }
+            15% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin1.jpg?raw=true');
+                opacity: 0.2;
+            }
+            20% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin1.jpg?raw=true');
+                opacity: 0; /* Fade out */
+            }
+            20.01% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin3.jpg?raw=true');
+                opacity: 0; /* Start faded out */
+            }
+            35% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin3.jpg?raw=true');
+                opacity: 0.2;
+            }
+            40% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin3.jpg?raw=true');
+                opacity: 0;
+            }
+            40.01% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin2.jpg?raw=true');
+                opacity: 0;
+            }
+            55% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin2.jpg?raw=true');
+                opacity: 0.2;
+            }
+            60% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin2.jpg?raw=true');
+                opacity: 0;
+            }
+            60.01% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin4.jpg?raw=true');
+                opacity: 0;
+            }
+            75% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin4.jpg?raw=true');
+                opacity: 0.2;
+            }
+            80% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin4.jpg?raw=true');
+                opacity: 0;
+            }
+            80.01% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin.jpg?raw=true');
+                opacity: 0;
+            }
+            95% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin.jpg?raw=true');
+                opacity: 0.2;
+            }
+            100% {
+                background-image: url('https://github.com/Defdava/Digital-Twin-Website-used/blob/e93ccec33c490658c360964197ea2bc52b9ec83a/fotobrin.jpg?raw=true');
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+            <span>BRIN</span>
+            <span>Badan Riset Nasional</span>
+        </div>
+        <div class="header-right">
+            <span>Parking Management System</span>
+        </div>
+    </header>
+    <div class="login-container">
+        <div class="welcome-message">Welcome to BRIN Parking System</div>
+        <div class="login-box">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="text" id="regIdWorker" placeholder="ID Worker" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <button type="submit">Register</button>
+                <a href="/login.html">Already have an account? Click Here</a>
+            </form>
+        </div>
+    </div>
+    <script>
+        class User {
+            constructor(username, email, password, idWorker) {
+                this.username = username;
+                this.email = email;
+                this.password = password;
+                this.idWorker = idWorker;
+            }
+        }
+
+        class AuthSystem {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('users')) || [];
+            }
+
+            register(username, email, password, idWorker) {
+                const userExists = this.users.some(user => user.email === email);
+                if (userExists) {
+                    throw new Error('User already exists!');
+                }
+                const user = new User(username, email, password, idWorker);
+                this.users.push(user);
+                localStorage.setItem('users', JSON.stringify(this.users));
+                return user;
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                if (user) {
+                    return user;
+                }
+                throw new Error('Invalid email or password!');
+            }
+        }
+
+        const auth = new AuthSystem();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('registerForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const username = document.getElementById('regUsername').value;
+                const email = document.getElementById('regEmail').value;
+                const idWorker = document.getElementById('regIdWorker').value;
+                const password = document.getElementById('regPassword').value;
+
+                if (!username || !email || !idWorker || !password) {
+                    alert('Please fill in all fields!');
+                    return;
+                }
+
+                try {
+                    auth.register(username, email, password, idWorker);
+                    alert('Registration successful! Please login.');
+                    window.location.href = '/login.html';
+                } catch (error) {
+                    alert(error.message);
+                }
+            });
+
+            // Prevent undo/redo navigation
+            document.addEventListener('keydown', (event) => {
+                if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    console.log('Undo/Redo is disabled');
+                }
+            });
+
+            // Prevent back/forward navigation
+            history.replaceState(null, null, window.location.href);
+            window.addEventListener('popstate', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                history.replaceState(null, null, window.location.href);
+            });
+        });
+    </script>
+</body>
+</html>

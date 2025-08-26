@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Export Data - BRIN Parking Management</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/blob/575171d0e9964327d99950733c2b48cea0c59d72/logo-brin.png?raw=true">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: darkslategrey;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: none;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        video#bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.4;
+        }
+
+        header {
+            background-image: linear-gradient(to right, lightseagreen, palevioletred);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo img {
+            height: 40px;
+            vertical-align: middle;
+        }
+
+        .logo span {
+            margin-left: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-right span {
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        .main-content {
+            margin-left: 0;
+            padding: 80px 20px 20px;
+            min-height: 100vh;
+        }
+
+        .toolbar {
+            position: fixed;
+            top: 60px;
+            left: -400px;
+            width: 200px;
+            height: 100%;
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 15px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease-in-out;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .toolbar.active {
+            left: 0;
+        }
+
+        .toolbar .feature-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .toolbar .feature-box h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            color: black;
+        }
+
+        .toolbar .feature-box button {
+            width: 100%;
+            padding: 6px;
+            background-color: darkgrey;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-bottom: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .toolbar .feature-box button:hover {
+            background-color: darkslategrey;
+            color: white;
+        }
+
+        .toolbar .user-info {
+            text-align: center;
+        }
+
+        .toolbar .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+
+        .toolbar .user-info span {
+            display: block;
+            margin: 4px 0;
+            font-size: 11px;
+            color: black;
+        }
+
+        .history {
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #dc3545;
+            min-height: 150px;
+            position: relative;
+            color: white;
+        }
+
+        .history h2 {
+            margin: 0 0 15px;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .history-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .history-filters input,
+        .history-filters select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 13px;
+            flex: 1;
+            min-width: 120px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+        }
+
+        .history-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+            background-color: transparent;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
+
+        .history-table th,
+        .history-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: black;
+        }
+
+        .history-table th {
+            background-color: rgba(233, 236, 239, 0.9);
+            color: #333;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .history-table td {
+            background-color: transparent;
+        }
+
+        .history-table tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        .history-table tbody tr:hover {
+            background-color: rgba(245, 245, 245, 0.7);
+        }
+
+        .status.in {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status.out {
+            color: red;
+            font-weight: bold;
+        }
+
+        #exportBtn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 15px auto;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        #exportBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #error-message {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1001;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <video id="bg-video" autoplay muted loop>
+        <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <header>
+        <div class="logo" id="toggleToolbar">
+            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+            <span>BRIN</span>
+            <span>Badan Riset Nasional</span>
+        </div>
+        <div class="header-right">
+            <span>Parking Management System</span>
+        </div>
+    </header>
+    <aside class="toolbar" id="toolbar">
+        <div class="feature-box user-info" id="userInfo">
+            <h3>User</h3>
+            <img id="profilePic" src="/assets/user.JPG" alt="User">
+            <span>Welcome Back</span>
+            <span id="userName"></span>
+            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
+            <button class="logout">Log Out</button>
+        </div>
+        <div class="feature-box">
+            <h2>Parking Management System</h2>
+            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
+            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
+            <button class="export-data" onclick="window.location.href='/exportdata.html'">Export Data</button>
+            <button class="helpdesk" onclick="window.location.href='/helpdesk.html'">Helpdesk</button>
+            <button class="parking-analysis" onclick="window.location.href='/parkiranalysis.html'">Parking Analysis</button>
+        </div>
+    </aside>
+    <main class="main-content">
+        <div class="history">
+            <h2>Slot History</h2>
+            <div class="history-filters">
+                <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 18)">
+                <input type="date" id="filterDate">
+                <select id="filterStatus">
+                    <option value="">All Status</option>
+                    <option value="terisi">Terisi</option>
+                    <option value="kosong">Kosong</option>
+                </select>
+            </div>
+            <button id="exportBtn">Export Data</button>
+            <div class="history-table-container">
+                <table class="history-table" id="slotHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Slot</th>
+                            <th>Timestamp</th>
+                            <th>Status</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="error-message"></div>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Authentication System
+        class User {
+            constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
+                this.username = username;
+                this.email = email;
+                this.password = password;
+                this.idWorker = idWorker;
+                this.profilePic = profilePic;
+            }
+        }
+
+        class AuthSystem {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('users')) || [];
+            }
+
+            register(username, email, password, idWorker, profilePic) {
+                const userExists = this.users.some(user => user.email === email);
+                if (userExists) {
+                    throw new Error('User already exists!');
+                }
+                const user = new User(username, email, password, idWorker, profilePic);
+                this.users.push(user);
+                localStorage.setItem('users', JSON.stringify(this.users));
+                return user;
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                if (user) {
+                    return user;
+                }
+                throw new Error('Invalid email or password!');
+            }
+        }
+
+        const auth = new AuthSystem();
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
+            authDomain: "digitaltwinparkingbrin.firebaseapp.com",
+            databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "digitaltwinparkingbrin",
+            storageBucket: "digitaltwinparkingbrin.appspot.com",
+            messagingSenderId: "608462498913",
+            appId: "1:608462498913:web:73695d8c91f923e2db8e20",
+            measurementId: "G-F1TRY65RTG"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const slotHistoryRef = firebase.database().ref("slot_history");
+
+        // Show Error Message
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Slot History Update with Filtering
+        let historyDataArray = [];
+
+        function renderHistoryTable() {
+            const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
+            slotHistoryTable.innerHTML = "";
+
+            const filterSlot = document.getElementById('filterSlot').value.trim();
+            const filterDate = document.getElementById('filterDate').value;
+            const filterStatus = document.getElementById('filterStatus').value;
+
+            historyDataArray.forEach((entry) => {
+                const entryDate = entry.timestamp.split(' ')[0];
+                if (filterSlot && entry.slot !== filterSlot) return;
+                if (filterDate && entryDate !== filterDate) return;
+                if (filterStatus && entry.status !== filterStatus) return;
+
+                const row = slotHistoryTable.insertRow();
+                row.insertCell(0).textContent = entry.slot;
+                row.insertCell(1).textContent = entry.timestamp;
+                row.insertCell(2).textContent = entry.status;
+                row.insertCell(3).textContent = entry.size;
+
+                if (entry.status === 'terisi') {
+                    row.cells[2].className = 'status in';
+                } else if (entry.status === 'kosong') {
+                    row.cells[2].className = 'status out';
+                }
+            });
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            const filteredData = [];
+            const filterSlot = document.getElementById('filterSlot').value.trim();
+            const filterDate = document.getElementById('filterDate').value;
+            const filterStatus = document.getElementById('filterStatus').value;
+
+            historyDataArray.forEach((entry) => {
+                const entryDate = entry.timestamp.split(' ')[0];
+                if (filterSlot && entry.slot !== filterSlot) return;
+                if (filterDate && entryDate !== filterDate) return;
+                if (filterStatus && entry.status !== filterStatus) return;
+
+                filteredData.push({
+                    Slot: entry.slot,
+                    Timestamp: entry.timestamp,
+                    Status: entry.status,
+                    Size: entry.size
+                });
+            });
+
+            if (filteredData.length === 0) {
+                showError("No data to export.");
+                return;
+            }
+
+            const worksheet = XLSX.utils.json_to_sheet(filteredData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Slot History");
+            XLSX.writeFile(workbook, `BRIN_Slot_History_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Authentication
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            const profilePic = document.getElementById('profilePic');
+            if (!currentUser) {
+                alert('Silakan login terlebih dahulu!');
+                window.location.replace('/login.html');
+                return;
+            } else {
+                userName.textContent = currentUser.username;
+                profilePic.src = currentUser.profilePic || '/assets/user.JPG';
+            }
+
+            // Logout
+            document.querySelector('.logout').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                alert('Berhasil logout!');
+                window.location.replace('/login.html');
+            });
+
+            // Toggle Toolbar
+            const toggleToolbar = document.getElementById('toggleToolbar');
+            const toolbar = document.getElementById('toolbar');
+            toggleToolbar.addEventListener('click', () => {
+                toolbar.classList.toggle('active');
+            });
+
+            // Fetch Slot History from Firebase
+            slotHistoryRef.on("value", (snapshot) => {
+                console.log("Firebase slot_history data:", snapshot.val());
+                const historyData = snapshot.val();
+                historyDataArray = [];
+
+                if (!historyData) {
+                    console.warn("No slot history data available.");
+                    renderHistoryTable();
+                    showError("No slot history data available.");
+                    return;
+                }
+
+                Object.keys(historyData).forEach((slotKey) => {
+                    const slotLogs = historyData[slotKey];
+                    Object.entries(slotLogs).forEach(([timestamp, entry]) => {
+                        const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
+                        const slotNumber = slotKey.split("_")[1];
+                        const size = entry.size ? entry.size.toLowerCase() : 'none';
+                        historyDataArray.push({
+                            slot: slotNumber,
+                            timestamp: timestamp,
+                            status: status,
+                            size: size
+                        });
+                    });
+                });
+
+                historyDataArray.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+                renderHistoryTable();
+            }, (error) => {
+                console.error("Error fetching slot history:", error);
+                showError("Failed to fetch slot history data.");
+            });
+
+            // Filter Event Listeners
+            document.getElementById('filterSlot').addEventListener('input', renderHistoryTable);
+            document.getElementById('filterDate').addEventListener('change', renderHistoryTable);
+            document.getElementById('filterStatus').addEventListener('change', renderHistoryTable);
+
+            // Export Button Event Listener
+            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+
+            // Prevent Undo/Redo and Navigation
+            document.addEventListener('keydown', (event) => {
+                if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
+                    event.preventDefault();
+                    console.log('Undo/Redo is disabled');
+                }
+            });
+
+            window.addEventListener('popstate', (event) => {
+                event.preventDefault();
+                if (!localStorage.getItem('currentUser')) {
+                    window.location.replace('/login.html');
+                } else {
+                    history.replaceState(null, null, window.location.href);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

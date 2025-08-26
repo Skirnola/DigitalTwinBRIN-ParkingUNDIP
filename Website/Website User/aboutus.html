@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>About Us - BRIN Cisitu Bandung</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website_user/blob/6e7fbc84b4b4ba7fae0470f3313d9cef8f47b8f5/logo-brin.png?raw=true">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: darkslategrey;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: none;
+            opacity: 0.2;
+            z-index: -1;
+        }
+        video#bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.4;
+        }
+        header {
+            background-image: linear-gradient(to right, lightseagreen, palevioletred);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .logo img {
+            height: 40px;
+            vertical-align: middle;
+        }
+        .logo span {
+            margin-left: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+        .header-right span {
+            margin-right: 20px;
+            font-size: 14px;
+        }
+        .header-right a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border: 2px solid white;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .header-right a:hover {
+            background-color: white;
+            color: darkslategrey;
+        }
+        .container {
+            margin-left: 0;
+            padding: 80px 20px 20px;
+            min-height: 100vh;
+        }
+        .about-section {
+            background-color: lightgrey;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #dc3545;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .about-section img {
+            max-width: 100%;
+            height: auto;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+        .about-section h2 {
+            margin: 0 0 10px;
+            color: #007bff;
+            font-size: 16px;
+        }
+        .mission-vision {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .mission-vision div {
+            background-color: lightgrey;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #dc3545;
+        }
+        .mission-vision h3 {
+            color: #007bff;
+            font-size: 16px;
+            margin: 0 0 10px;
+        }
+        .map-section {
+            background-color: lightgrey;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #dc3545;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .map-section h2 {
+            color: #007bff;
+            font-size: 16px;
+            margin: 0 0 10px;
+        }
+        .map-section .address {
+            font-size: 12px;
+            color: darkslategrey;
+            margin-bottom: 10px;
+        }
+        .map-section .address p {
+            margin: 0.2rem 0;
+        }
+        .map-section iframe {
+            width: 100%;
+            max-width: 800px;
+            height: 300px;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        footer {
+            background-image: linear-gradient(to right, lightseagreen, palevioletred);
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+        @media (max-width: 768px) {
+            .mission-vision {
+                grid-template-columns: 1fr;
+            }
+            .mission-vision div {
+                margin-bottom: 15px;
+            }
+            .map-section iframe {
+                height: 200px;
+            }
+            .map-section h2 {
+                font-size: 14px;
+            }
+            .map-section .address {
+                font-size: 11px;
+            }
+            .about-section h2 {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <video id="bg-video" autoplay muted loop>
+        <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <header>
+        <div class="logo">
+            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+            <span>BRIN</span>
+            <span>Badan Riset Nasional</span>
+        </div>
+        <div class="header-right">
+            <span>About Us</span>
+            <a href="index.html">Back to Home</a>
+        </div>
+    </header>
+    <div class="container">
+        <section class="about-section">
+            <h2>Who We Are</h2>
+            <img src="https://github.com/Defdava/Digital-Twin-Website_user/blob/e19481f9c495cfc44176ef9f29f93bb93d0b11d5/fotobrin.jpg?raw=true" alt="BRIN Cisitu Bandung">
+            <p>BRIN Cisitu Bandung is a leading research institution under Indonesia’s National Research and Innovation Agency (BRIN). Located in Bandung, we are dedicated to advancing scientific research and innovation to support Indonesia’s development and global competitiveness.</p>
+            <p>Our team of researchers, scientists, and innovators work collaboratively across various disciplines to address national challenges, foster sustainable growth, and contribute to the global knowledge economy.</p>
+        </section>
+
+        <section class="mission-vision">
+            <div class="mission">
+                <h3>Our Mission</h3>
+                <p>To conduct cutting-edge research and develop innovative solutions that drive Indonesia’s progress in science, technology, and sustainable development.</p>
+            </div>
+            <div class="vision">
+                <h3>Our Vision</h3>
+                <p>To be a world-class research institution that empowers Indonesia through transformative innovations and impactful discoveries.</p>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2>Our Commitment</h2>
+            <p>At BRIN Cisitu Bandung, we are committed to fostering collaboration between academia, industry, and government to create a thriving ecosystem for research and innovation. We aim to deliver solutions that address real-world challenges while promoting inclusivity, sustainability, and excellence.</p>
+        </section>
+
+        <section class="map-section">
+            <h2>Visit Us</h2>
+            <div class="address">
+                <p>BRIN Cisitu Bandung</p>
+                <p>Jl. Cisitu, Coblong, Kota Bandung</p>
+                <p>Jawa Barat 40135, Indonesia</p>
+            </div>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4002.3351152997707!2d107.60834297504341!3d-6.8817471931171275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e76d8ebd151d%3A0x5b07015f07795def!2sKawasan%20LIPI%20Bandung%20(BRIN%20Bandung-Cisitu)-Samaun%20Samadikun!5e1!3m2!1sen!2sid!4v1755060321515!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 BRIN Cisitu Bandung. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
