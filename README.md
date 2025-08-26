@@ -1,0 +1,1 @@
+Dibuat oleh manusia sigma
